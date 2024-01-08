@@ -2,6 +2,7 @@ const { AssignmentRepository } = require('../repositories/assignment');
 const { ClassRepository } = require('../repositories/class');
 const { ClassStudentRepository } = require('../repositories/class_student');
 const ErrorList = require('../errors/list');
+const { MeetingRepository } = require('../repositories/meeting');
 
 class ClassService {
     /**
@@ -9,8 +10,9 @@ class ClassService {
      * @param {ClassRepository} classRepository 
      * @param {AssignmentRepository} assignmentRepository 
      * @param {ClassStudentRepository} classStudentRepository 
+     * @param {MeetingRepository} meetingRepository
      */
-    constructor(classRepository, assignmentRepository, classStudentRepository) {
+    constructor(classRepository, assignmentRepository, classStudentRepository, meetingRepository) {
         if (!classRepository) {
             throw new Error('ClassService must be constructed with a classRepository')
         }
@@ -35,6 +37,14 @@ class ClassService {
             throw new Error('classStudentRepository must be an instance of ClassStudentRepository')
         }
 
+        if (!meetingRepository) {
+            throw new Error('ClassService must be constructed with a meetingRepository')
+        }
+
+        if (!(meetingRepository instanceof MeetingRepository)) {
+            throw new Error('meetingRepository must be an instance of MeetingRepository')
+        }
+
         Object.defineProperties(this, {
             classRepository: {
                 value: classRepository,
@@ -47,7 +57,11 @@ class ClassService {
             classStudentRepository: {
                 value: classStudentRepository,
                 writable: false
-            }
+            },
+            meetingRepository: {
+                value: meetingRepository,
+                writable: false
+            },
         });
     }
 
@@ -62,8 +76,13 @@ class ClassService {
 }
 
 class classService extends ClassService {
-    constructor(classRepository, assignmentRepository, classStudentRepository) {
-        super(classRepository, assignmentRepository, classStudentRepository);
+    constructor(
+        classRepository, 
+        assignmentRepository, 
+        classStudentRepository,
+        meetingRepository,
+        ) {
+        super(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
 
         /**
          * @type {ClassRepository}
@@ -77,7 +96,12 @@ class classService extends ClassService {
         /**
          * @type {ClassStudentRepository}
          */
+        
         this.classStudentRepository;
+        /**
+         * @type {MeetingRepository}
+         */
+        this.meetingRepository;
     }
 
     async addClass(classObj) {
@@ -198,20 +222,93 @@ class classService extends ClassService {
 
         return [data, err];
     }
+
+    /**
+     * 
+     * @param {*} class_id 
+     * @param {*} meeting 
+     * @returns 
+     */
+    async addMeeting(class_id, m) {
+        let [c, classErr] = await this.classRepository.get(class_id);
+        if (classErr != undefined) {
+            console.log(classErr);
+            return [undefined, ErrorList.ErrorInternalServer];
+        }
+        
+        for (let i = 0; i < c.assignment.length; i++) {
+            if (!c.assignment[i].veriied) {
+                return [undefined, ErrorList.ErrorAssignmentNotVerified];
+            }
+        }
+        
+        meeting.code = `${class_id}.${student.code}`;
+
+        let slots = generateSlots(m.from, m.to, m.interval * 60);
+        if (slots.length == 0) {
+            return [undefined, ErrorList.ErrorInvalidRequest];
+        }
+
+        let meetings = [];
+        for (let i = 0; i < slots; i++) {
+            let meeting = {
+                class_id: class_id,
+                teacher_id: m.teacher_id,
+                from: slots[i].from,
+                to: slots[i].to,
+                room: room,
+            };
+            meetings.push(meeting);
+        }
+        
+        let [result, err] = await this.meetingRepository.addMeeting(class_id, meeting);
+        if (err != undefined) {
+            console.log(err);
+            return [undefined, ErrorList.ErrorInternalServer];
+        }
+
+        if (result == undefined) {
+            return [undefined, ErrorList.ErrorClassNotFound];
+        }
+
+        return [result, err];
+    }
+}
+
+function generateSlots(from, to, interval) {
+    let steps = [];
+
+    let unixFrom = from.getTime();
+    let unixTo = to.getTime();
+    let current = unixFrom;
+
+    while (current + interval <= unixTo) {
+        steps.push({
+            from: new Date(current),
+            to: new Date(current + interval),
+        });
+
+        current += interval;
+    }
+
+    return steps;
 }
 
 /**
  * 
  * @param {ClassRepository} classRepository 
  * @param {AssignmentRepository} assignmentRepository 
+ * @param {ClassStudentRepository} classStudentRepository
+ * @param {MeetingRepository} meetingRepository 
  * @returns 
  */
 function newClassService(
     classRepository,
     assignmentRepository,
     classStudentRepository,
+    meetingRepository,
 ) {
-    return new classService(classRepository, assignmentRepository, classStudentRepository);
+    return new classService(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
 }
 
 module.exports = {

@@ -80,10 +80,21 @@ class ClassController extends BaseController {
 
         super.response(res, result, undefined);
     }
-
+    
     async addAssignment(req, res) {
         let id = req.params.id;
         let assignment = {
+            class_id: id,
+            name: req.body.name,
+        };
+
+        let [result, err] = await this.classService.addAssignment(assignment);
+        super.response(res, result, err);
+    }
+
+    async addMeeting(req, res) {
+        let id = req.params.id;
+        let meeting = {
             class_id: id,
             name: req.body.name,
         };

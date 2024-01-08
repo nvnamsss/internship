@@ -5,6 +5,7 @@ const REPORT_MODEL_NAME = 'report';
 const TEACHER_MODEL_NAME = 'teacher';
 const STUDENT_MODEL_NAME = 'student';
 const CLASS_STUDENT_MODEL_NAME = 'class_student';
+const MEETING_MODEL_NAME = 'meeting';
 
 module.exports = {
     ASSIGNMENT_MODEL_NAME,
@@ -13,5 +14,6 @@ module.exports = {
     REPORT_MODEL_NAME,
     TEACHER_MODEL_NAME,
     STUDENT_MODEL_NAME,
-    CLASS_STUDENT_MODEL_NAME
+    CLASS_STUDENT_MODEL_NAME,
+    MEETING_MODEL_NAME,
 }

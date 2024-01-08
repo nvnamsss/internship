@@ -17,6 +17,7 @@ const ErrorStudentNotFound = NewError("student not found", StatusCodes.NOT_FOUND
 const ErrorClassCodeDuplicate = NewError("class code is already exists", StatusCodes.BAD_REQUEST, ModuleClass, 0);
 const ErrorStudentAlreadyEnrolled = NewError("student is already enrolled", StatusCodes.BAD_REQUEST, ModuleClass, 1);
 const ErrorStudentIDsEmpty = NewError("student ids is empty", StatusCodes.BAD_REQUEST, ModuleClass, 2);
+const ErrorAssignmentNotVerified = NewError("assignment is not verified", StatusCodes.BAD_REQUEST, ModuleClass, 2);
 
 module.exports = {
     ModuleCommon,
@@ -35,4 +36,5 @@ module.exports = {
     ErrorStudentAlreadyEnrolled,
     ErrorDuplicated,
     ErrorStudentIDsEmpty,
+    ErrorAssignmentNotVerified,
 }

@@ -11,7 +11,7 @@ function defineReport(sequelize) {
         code: DataTypes.STRING,
         name: DataTypes.STRING,
 
-    })
+    });
 }
 
 module.exports = {

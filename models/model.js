@@ -4,6 +4,7 @@ const { defineClass, defineClassAssociation } = require('./class');
 const { defineReport } = require('./report');
 const { defineTeacher } = require('./teacher');
 const { defineStudent } = require('./student');
+const { defineMeeting } = require('./meeting');
 
 function DefineModel(sequelize) {
     defineAssignment(sequelize);
@@ -12,6 +13,7 @@ function DefineModel(sequelize) {
     defineReport(sequelize);
     defineTeacher(sequelize);
     defineStudent(sequelize);
+    defineMeeting(sequelize);
 
     defineClassAssociation(sequelize);
 }

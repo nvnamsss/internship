@@ -17,6 +17,7 @@ const { newClassService } = require('../services/class');
 const { newSequelizeAssignmentRepository } = require('../repositories/assignment');
 const { DefineModel } = require('../models/model');
 const { newSequelizeClassStudentRepository } = require('../repositories/class_student');
+const { newSequelizeMeetingRepository } = require('../repositories/meeting');
 
 function createRoute() {
     const dbConfig = config.get('database')
@@ -36,11 +37,12 @@ function createRoute() {
     const classRepository = newSequelizeClassRepository(sequelize);
     const assignmentRepository = newSequelizeAssignmentRepository(sequelize);
     const classStudentRepository = newSequelizeClassStudentRepository(sequelize);
+    const meetingRepository = newSequelizeMeetingRepository(sequelize);
 
     const studentService = newStudentService(studentRepository);
     const reportService = newReportService(reportRepository);
     const userService = newUserService(userRepository);
-    const classService = newClassService(classRepository, assignmentRepository, classStudentRepository);
+    const classService = newClassService(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
     
     const studentController = new StudentController(studentService);
     const reportController = new ReportController(reportService);
@@ -70,6 +72,7 @@ function createRoute() {
     class_v1.get('/:id', classController.get.bind(classController));
     class_v1.post('/:id/enroll', classController.enroll.bind(classController));
     class_v1.post('/:id/assignment', classController.addAssignment.bind(classController));
+    class_v1.post('/:id/meeting', classController.addMeeting.bind(classController));
     class_v1.post('/', classController.create.bind(classController));
     class_v1.get('/', classController.search.bind(classController));
 

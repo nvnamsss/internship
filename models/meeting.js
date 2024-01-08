@@ -1,24 +1,25 @@
 const { DataTypes } = require('sequelize');
-const { ASSIGNMENT_MODEL_NAME } = require('./const');
+const Values = require('./const');
 
-function defineAssignment(sequelize) {
-    sequelize.define(ASSIGNMENT_MODEL_NAME, {
+function defineMeeting(sequelize) {
+    sequelize.define(Values.MEETING_MODEL_NAME, {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        class_id: DataTypes.INTEGER,
+        code: DataTypes.STRING,
         name: DataTypes.STRING,
-        data: DataTypes.JSON,
-        verified: DataTypes.BOOLEAN,
-    }, {
+        class_id: DataTypes.INTEGER,
+        student_id: DataTypes.INTEGER,
+    },
+    {
         timestamps: true,
         createdAt: false,
         updatedAt: false
-    })
+    });
 }
 
 module.exports = {
-    defineAssignment,
+    defineMeeting,
 }
