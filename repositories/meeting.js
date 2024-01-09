@@ -1,5 +1,6 @@
 class MeetingRepository {
     async get(id) {}
+    async getByClassID(class_id) {}
     async create(meeting) {}
     async batchCreate(meetings) {}
 }
@@ -32,6 +33,22 @@ class selizalizeMeetingRepository extends MeetingRepository {
         } catch (err) {
             console.log(err);
             return [undefined, err]
+        }
+    }
+
+    async getByClassID(class_id) {
+        try {
+            const result = await this.model.findAll({
+                where: {
+                    class_id: class_id
+                }
+            });
+
+            return [result, undefined];
+        } catch (err) {
+            console.log(err);
+            return [undefined, err];
+        
         }
     }
     

@@ -236,56 +236,83 @@ class classService extends ClassService {
             return [undefined, ErrorList.ErrorInternalServer];
         }
         
-        for (let i = 0; i < c.assignment.length; i++) {
-            if (!c.assignment[i].veriied) {
+        if (c == null) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+
+        for (let i = 0; i < c.assignments.length; i++) {
+            if (c.assignments[i].verified) {
                 return [undefined, ErrorList.ErrorAssignmentNotVerified];
             }
         }
         
-        meeting.code = `${class_id}.${student.code}`;
-
         let slots = generateSlots(m.from, m.to, m.interval * 60);
         if (slots.length == 0) {
             return [undefined, ErrorList.ErrorInvalidRequest];
         }
 
+        let [existed_student_ids, excluded_err] = await this.meetingRepository.getByClassID(class_id);
+        if (excluded_err != undefined) {
+            console.log(excluded_err);
+            return [undefined, ErrorList.ErrorInternalServer];
+        }
+
+        let excluded_student_ids = existed_student_ids.map(meeting => meeting.student_id);
+        // find students have not arranged
+        let [student_ids, randomErr] = await this.classStudentRepository.getRandomByClassID(class_id, slots.length, excluded_student_ids);
+        if (randomErr != undefined) {
+            console.log(randomErr);
+            return [undefined, ErrorList.ErrorInternalServer];
+        }
+
+        let length = Math.min(student_ids.length, slots.length);
+        if (length == 0) {
+            return [{
+                count: 0,
+            }, undefined];
+        }
+
         let meetings = [];
-        for (let i = 0; i < slots; i++) {
+        for (let i = 0; i < length; i++) {
             let meeting = {
                 class_id: class_id,
+                student_id: student_ids[i].id,
                 teacher_id: m.teacher_id,
                 from: slots[i].from,
                 to: slots[i].to,
-                room: room,
+                room: m.room,
             };
             meetings.push(meeting);
         }
         
-        let [result, err] = await this.meetingRepository.addMeeting(class_id, meeting);
+        let [result, err] = await this.meetingRepository.batchCreate(meetings);
         if (err != undefined) {
             console.log(err);
             return [undefined, ErrorList.ErrorInternalServer];
         }
 
-        if (result == undefined) {
-            return [undefined, ErrorList.ErrorClassNotFound];
+        if (result == null) {
+            return [undefined, ErrorList.ErrorNotFound];
         }
-
-        return [result, err];
+        
+        return [{
+            count: result.length,
+        }, err];
     }
 }
 
 function generateSlots(from, to, interval) {
     let steps = [];
 
-    let unixFrom = from.getTime();
-    let unixTo = to.getTime();
+    let unixFrom = from.getTime() / 1000;
+    let unixTo = to.getTime() / 1000;
     let current = unixFrom;
 
+    console.log(unixFrom);
     while (current + interval <= unixTo) {
         steps.push({
-            from: new Date(current),
-            to: new Date(current + interval),
+            from: new Date(current * 1000),
+            to: new Date((current + interval) * 1000),
         });
 
         current += interval;

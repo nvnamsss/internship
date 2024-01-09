@@ -68,6 +68,28 @@ class UserController extends BaseController {
         }
     }
 
+    /**
+     * @swagger
+     * /auth/refresh:
+     *   post:
+     *     description: Refresh the access token
+     *     tags: [Auth]
+     *     requestBody:
+     *       required: true
+     *       content:
+     *         application/json:
+     *           schema:
+     *             type: object
+     *             $ref: '#/components/schemas/RefreshTokenRequest'
+     *     responses:
+     *       200:
+     *         description: success
+     *         content:
+     *           application/json:
+     *             schema:
+     *                type: object
+     *                $ref: '#/components/schemas/RefreshTokenResponse'
+     */
     async refreshToken(req, res) {
         const { refresh_token } = req.body;
         let [result, err] = await this.userService.refresh(refresh_token);

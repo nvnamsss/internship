@@ -101,6 +101,8 @@ class classRepository extends ClassRepository {
         }
     }
 
+
+
 }
 
 function newSequelizeClassRepository(sequelize) {

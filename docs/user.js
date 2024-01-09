@@ -36,43 +36,29 @@
  *           $ref: '#/components/schemas/Meta'
  *         data:
  *           $ref: '#/components/schemas/LoginData'
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *           description: The user ID.
- *           example: 0
- *         name:
- *           type: string
- *           description: The user's name.
- *           example: Leanne Grahams
- *      CreateStudentRequest:
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      RefreshTokenRequest:
  *          type: object
  *          properties:
- *              name:
+ *              refresh_token:
  *                  type: string
- *                  example: "Leanne Grahams"
- *              code:
- *                  type: string
- *                  example: "1612404"
- *      StudentData:
- *        type: object
- *          properties:
- *              id:
- *                  type: integer
- *                  example: 0
- *              name:
- *                  type: string
- *                  example: "Leanne Grahams"
- *              code:
- *                  type: string
- *                  example: "1612404"
- *      CreateStudentResponse:
+ *                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+ *      RefreshTokenResponse:
  *          type: object
  *          properties:
- *             meta:
- *                $ref: '#/components/schemas/Meta'
- *            data:
- *               $ref: '#/components/schemas/StudentData'
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ *              data:
+ *                  $ref: '#/components/schemas/RefreshTokenData'
+ *      RefreshTokenData:
+ *          type: object
+ *          properties:
+ *              access_token:
+ *                  type: string
+ *                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
  */

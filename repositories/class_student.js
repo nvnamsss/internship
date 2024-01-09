@@ -1,11 +1,18 @@
 const { Op } = require("sequelize");
 
 class ClassStudentRepository {
-    async getStudentsByClassId(classId) {}
-    async getStudentInClass(classId, studentID) {}
-    async getStudentsInClass(classId, studentIDs) {}
-    async addStudentsToClass(classId, studentIDs) {}
-    async removeStudentFromClass(classId, studentID) {}
+    async getStudentsByClassId(classId) { }
+    async getStudentInClass(classId, studentID) { }
+    async getStudentsInClass(classId, studentIDs) { }
+    async addStudentsToClass(classId, studentIDs) { }
+    async removeStudentFromClass(classId, studentID) { }
+    /**
+     * Get k random records with class_id from class excluding excluded students
+     * @param {Number} class_id
+     * @param {Number} k 
+     * @param {*} excluded 
+     */
+    async getRandomByClassID(class_id, k, excluded_student_ids) { }
 }
 
 class classStudentRepository extends ClassStudentRepository {
@@ -75,7 +82,7 @@ class classStudentRepository extends ClassStudentRepository {
         if (studentIDs.length == 0) {
             return [[], undefined];
         }
-        
+
         try {
             const result = await this.model.bulkCreate(studentIDs.map(studentID => {
                 return {
@@ -102,6 +109,27 @@ class classStudentRepository extends ClassStudentRepository {
         } catch (err) {
             console.log(err);
             return [undefined, err]
+        }
+    }
+
+    async getRandomByClassID(class_id, k, excluded_student_ids) {
+        try {
+            const result = await this.model.findAll({
+                where: {
+                    class_id: class_id,
+                    student_id: {
+                        [Op.notIn]: excluded_student_ids,
+                    }
+                },
+                order: [
+                    [this.sequelize.random()]
+                ],
+                limit: k
+            });
+            return [result, undefined];
+        } catch (err) {
+            console.log(err);
+            return [undefined, err];
         }
     }
 }

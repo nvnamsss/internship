@@ -81,7 +81,7 @@ class StudentController extends BaseController {
     *           application/json:
     *             schema:
     *                type: object
-    *                $ref: '#/components/schemas/LoginResponse'
+    *                $ref: '#/components/schemas/CreateStudentResponse'
     */
     async create(req, res, next) {
         console.log(req.body);

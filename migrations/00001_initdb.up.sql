@@ -48,6 +48,7 @@ CREATE TABLE `meetings` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `class_id` BIGINT NOT NULL,
   `student_id` BIGINT NOT NULL,
+  `teacher_id` BIGINT NOT NULL,
   `from` DATETIME NOT NULL,
   `to` DATETIME NOT NULL,
   `room` VARCHAR(255) NOT NULL,

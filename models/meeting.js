@@ -8,10 +8,12 @@ function defineMeeting(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
-        code: DataTypes.STRING,
-        name: DataTypes.STRING,
         class_id: DataTypes.INTEGER,
         student_id: DataTypes.INTEGER,
+        teacher_id: DataTypes.INTEGER,
+        from: DataTypes.DATE,
+        to: DataTypes.DATE,
+        room: DataTypes.STRING,
     },
     {
         timestamps: true,
