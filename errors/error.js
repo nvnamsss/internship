@@ -25,8 +25,6 @@ class AppError extends Error{
 
 function NewError(message, status, module, detailCode) {
     let code = parseInt(`${status}${module.toString().padStart(2, '0')}${detailCode.toString().padStart(2, '0')}`, 10);
-    console.log('aaaa', `${status}${module.toString().padStart(2, '0')}${detailCode.toString().padStart(2, '0')}`)
-    console.log('code', code);
     return new AppError(message, code);
 }
 

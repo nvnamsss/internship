@@ -20,7 +20,7 @@ app.use(
 );
 app.use(morgan('dev'));
 
-app.use('/internship', createRoute());
+// app.use('/internship', createRoute());
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

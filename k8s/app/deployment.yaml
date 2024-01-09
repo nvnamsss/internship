@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: internship-deployment
+  labels:
+    app: internship
+    tier: backend
+    environment: development
+    app.kubernetes.io/name: internship
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: internship-deployment
+  template:
+    metadata:
+      labels:
+        app: internship-deployment
+        tier: backend
+    spec:
+      containers:
+      - name: internship-application
+        image: registry.digitalocean.com/internship/internship-app:staging
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        envFrom:
+        - configMapRef:
+            name: internship-app-configmap

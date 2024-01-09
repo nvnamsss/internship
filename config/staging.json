@@ -1,0 +1,9 @@
+{
+    "database": {
+        "host": "default.svc.cluster-domain.mysql",
+        "port": "3306",
+        "username": "root",
+        "password": "password",
+        "db": "internship"
+    }
+}
