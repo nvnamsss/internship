@@ -1,4 +1,10 @@
 {
+    "servers": [
+        {
+            "url": "https://api.example.com/v1",
+            "description": "example"
+        }
+    ],
     "opts": {
         "template": "node_modules/better-docs"
     }

@@ -24,7 +24,7 @@ class ClassController extends BaseController {
 
     /**
     * @swagger
-    * /class/{id}:
+    * /v1/class/{id}:
     *   get:
     *     description: get class
     *     tags: [Class]
@@ -61,7 +61,7 @@ class ClassController extends BaseController {
 
     /**
     * @swagger
-    * /class:
+    * /v1/class:
     *   post:
     *     description: Create class
     *     tags: [Class]
@@ -93,7 +93,7 @@ class ClassController extends BaseController {
 
     /**
     * @swagger
-    * /class:
+    * /v1/class:
     *   get:
     *     description: search class
     *     tags: [Class]
@@ -137,7 +137,7 @@ class ClassController extends BaseController {
 
     /**
     * @swagger
-    * /class/{id}/enroll:
+    * /v1/class/{id}/enroll:
     *   post:
     *     description: add students into class
     *     tags: [Class]
@@ -182,6 +182,35 @@ class ClassController extends BaseController {
         super.response(res, result, undefined);
     }
     
+    /**
+    * @swagger
+    * /v1/class/{id}/assignment:
+    *   post:
+    *     description: Create class
+    *     tags: [Class]
+    *     parameters:
+    *       - in: path
+    *         name: id
+    *         required: true
+    *         description: class id
+    *         schema:
+    *           type: integer
+    *     requestBody:
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             $ref: '#/components/schemas/AddAssignmentRequest'
+    *     responses:
+    *       200:
+    *         description: success
+    *         content:
+    *           application/json:
+    *             schema:
+    *                type: object
+    *                $ref: '#/components/schemas/AddAssignmentResponse'
+    */
     async addAssignment(req, res) {
         let id = req.params.id;
         let assignment = {
@@ -195,7 +224,7 @@ class ClassController extends BaseController {
 
     /**
     * @swagger
-    * /class/{id}/meeting:
+    * /v1/class/{id}/meeting:
     *   post:
     *     description: randomly create meeting for class
     *     tags: [Class]

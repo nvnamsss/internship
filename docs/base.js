@@ -1,5 +1,14 @@
 /**
+ * servers:
+ * - url: http://localhost:3000/internship
+ *   description: Local server
+ * 
+ * 
+ */
+
+/**
  * @swagger
+ * 
  * components:
  *   schemas:
  *     Meta:

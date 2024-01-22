@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-configmap
+data:
+  MYSQL_ROOT_PASSWORD: mypassword
+  MYSQL_DATABASE: internship

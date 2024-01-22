@@ -11,8 +11,14 @@ function defineUser(sequelize) {
         username: DataTypes.STRING,
         password: DataTypes.STRING,
         email: DataTypes.STRING,
-        status: DataTypes.STRING,
+        activated: DataTypes.BOOLEAN,
         role_id: DataTypes.INTEGER,
+        binding: {
+            type: DataTypes.INTEGER,
+            set(value) {
+                this.setDataValue('binding', value);
+            }
+        },
     }, {
         timestamps: true,
         createdAt: false,

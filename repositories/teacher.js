@@ -1,6 +1,6 @@
 const { Sequelize, DataTypes } = require('sequelize');
 
-class TeacherReposity {
+class TeacherRepository {
     constructor() {
         this.model = require('../models/teacher');
     }
@@ -16,7 +16,7 @@ class TeacherReposity {
     async delete(id) {}
 }
 
-class teacherRepository extends TeacherReposity {
+class teacherRepository extends TeacherRepository {
     /**
      * 
      * @param {Sequelize} sequelize 
@@ -66,12 +66,12 @@ class teacherRepository extends TeacherReposity {
     }
 }
 
-function newTeacherRepository(sequelize) {
+function newSequelizeTeacherRepository(sequelize) {
     return new teacherRepository(sequelize);
 }
 
 
 module.exports = {
-    TeacherReposity,
-    newTeacherRepository,
+    TeacherRepository,
+    newSequelizeTeacherRepository,
 }

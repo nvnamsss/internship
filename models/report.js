@@ -8,9 +8,19 @@ function defineReport(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
-        code: DataTypes.STRING,
-        name: DataTypes.STRING,
-
+        ref_id: DataTypes.STRING,
+        class_id: DataTypes.INTEGER,
+        assignment_id: DataTypes.INTEGER,
+        student_id: DataTypes.INTEGER,
+        file: DataTypes.BLOB,
+        url: DataTypes.STRING,
+        data: DataTypes.JSON,
+        created_at: DataTypes.DATE,
+        updated_at: DataTypes.DATE,
+    }, {
+        timestamps: true,
+        createdAt: false,
+        updatedAt: false
     });
 }
 

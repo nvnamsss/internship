@@ -62,3 +62,45 @@
  *                  type: string
  *                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
  */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      RegisterRequest:
+ *          type: object
+ *          properties:
+ *              username:
+ *                  type: string
+ *                  example: "username"
+ *              password:
+ *                  type: string
+ *                  example: "password"
+ *              role_id:
+ *                  type: integer
+ *                  example: "{1, 2, 3}"
+ *      RegisterResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      BindRequest:
+ *          type: object
+ *          properties:
+ *              code:
+ *                  type: string
+ *                  description: "student/teacher code"
+ *                  example: "1612404"
+ *   
+ *      BindResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ */

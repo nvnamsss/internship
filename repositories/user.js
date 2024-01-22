@@ -4,7 +4,7 @@ const ErrorList = require("../errors/list");
 class UserRepository {
     async create(user) {}
 
-    async update(user) {}
+    async updateBinding(user) {}
 
     async delete(user) {}
 
@@ -98,6 +98,21 @@ class sequelizeUserRepository extends UserRepository {
         } catch (err) {
             // console.log(err);
             return [undefined, err]
+        }
+    }
+
+    async updateBinding(user) {
+        try {
+            const result = await this.model.update({binding: user.binding}, {
+                where: {
+                    id: user.id
+                }
+            });
+
+            return [result, undefined];
+        } catch (err) {
+            console.log(err);
+            return [undefined, err];
         }
     }
 }

@@ -9,6 +9,17 @@ CREATE TABLE `students` (
   PRIMARY KEY (`id`)
 );
 
+CREATE TABLE `teachers` (
+  `id` BIGINT NOT NULL AUTO_INCREMENT,
+  `code` VARCHAR(25) UNIQUE,
+  `name` VARCHAR(255) NOT NULL,
+  `data` JSON NULL,
+  `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `deleted_at` DATETIME NULL,
+  PRIMARY KEY (`id`)
+);
+
 CREATE TABLE `classes` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(25) UNIQUE,
@@ -23,7 +34,7 @@ CREATE TABLE `assignments` (
   `id` BIGINT NOT NULL AUTO_INCREMENT,
   `class_id` BIGINT NOT NULL,
   `name` VARCHAR(255) NOT NULL,
-  `verified` BOOL NOT NULL,
+  `verified` BOOL NOT NULL DEFAULT FALSE,
   `data` JSON NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -36,7 +47,7 @@ CREATE TABLE `reports` (
   `class_id` BIGINT NOT NULL,
   `assignment_id` BIGINT NOT NULL,
   `student_id` BIGINT NOT NULL,
-  `file` BLOB NULL,
+  `file` MEDIUMBLOB NULL,
   `url` VARCHAR(255) NULL,
   `data` JSON NULL,
   `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

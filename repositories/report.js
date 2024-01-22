@@ -2,6 +2,7 @@ const { Sequelize, DataTypes } = require("sequelize");
 
 class ReportRepository {
     async get(id) {}
+    async getFileByRefID(ref_id) {}
     async create(report) {}
     async update(report) {}
 }
@@ -58,6 +59,21 @@ class sequelizeReportRepository extends ReportRepository {
                     id: report.id
                 }
             });
+            return [result, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    }
+
+    async getFileByRefID(ref_id) {
+        try {
+            const result = await this.model.findOne({
+                where: {
+                    ref_id: ref_id
+                },
+                attributes: ['file', 'data']
+            })
             return [result, undefined]
         } catch (err) {
             console.log(err);

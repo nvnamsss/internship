@@ -1,5 +1,7 @@
 const { BaseController } = require("./base");
 const { ReportService } = require("../services/report");
+const {formidable} = require('formidable');
+const stream = require('stream');
 // const multer = require('multer');
 
 class ReportController extends BaseController {
@@ -26,6 +28,29 @@ class ReportController extends BaseController {
         });
     }
 
+    /**
+    * @swagger
+    * /v1/report/{id}:
+    *   get:
+    *     description: get report
+    *     tags: [Report]
+    *     parameters:
+    *       - in: path
+    *         name: id
+    *         required: true
+    *         description: Numeric ID of the user to retrieve.
+    *         type: integer
+    *         schema:
+    *           type: integer
+    *     responses:
+    *       200:
+    *         description: success
+    *         content:
+    *           application/json:
+    *               schema:
+    *                   type: object
+    *                   $ref: '#/components/schemas/GetReportResponse'
+    */
     async get(req, res, next) {
         let [result, err] = await this.reportService.getReport(req.params.id);
         if (err != undefined) {
@@ -44,42 +69,100 @@ class ReportController extends BaseController {
         res.send(result.data.data);
     } 
 
-    // Create an instance of multer
-
+    /**
+    * @swagger
+    * /v1/report:
+    *   post:
+    *     description: Create report
+    *     tags: [Report]
+    *     requestBody:
+    *       required: true
+    *       content:
+    *         multipart/form-data:
+    *           schema:
+    *             type: object
+    *             $ref: '#/components/schemas/CreateReportRequest'
+    *     responses:
+    *       200:
+    *         description: success
+    *         content:
+    *           application/json:
+    *             schema:
+    *                type: object
+    *                $ref: '#/components/schemas/CreateReportResponse'
+    */
     async create(req, res, next) {
-        let m = req.body;
-        let file = req.file;
+        const form = formidable({});
+        form.parse(req, async (err, fields, files) => {
+            if (err) {
+                next(err);
+                return;
+            }
 
-        console.log(m);
-        console.log(file);
+            let file = files.file;
+            let m = {
+                assignment_id: fields.assignment_id[0],
+                student_id: req.payload.student_id,
+                file_path: file[0].filepath,
+                file_name: file[0].originalFilename,
+            };
 
-        let [result, err] = await this.reportService.createReport(m);
+
+            console.log(m);
+            console.log(file);
+            
+            let [result, reportErr] = await this.reportService.createReport(m);
+            if (reportErr != undefined) {
+                super.response(res, undefined, reportErr);
+                return;
+            }
+
+            let payload = req.payload;
+
+            super.response(res, {fields, file, payload}, undefined);
+        });
+    }
+
+    /**
+    * @swagger
+    * /v1/report/{ref_id}/download:
+    *   get:
+    *     description: download report as file
+    *     tags: [Report]
+    *     parameters:
+    *       - in: path
+    *         name: ref_id
+    *         required: true
+    *         description: reference ID of the report to retrieve.
+    *         type: integer
+    *         schema:
+    *           type: integer
+    *     responses:
+    *       200:
+    *         description: success
+    */
+    async download(req, res, next) {
+        let [report, err] = await this.reportService.getFile(req.params.ref_id);
         if (err != undefined) {
             super.response(res, undefined, err);
             return;
         }
 
-        super.response(res, result, undefined);
+        console.log(report);
+        
+        let fileContents = Buffer.from(report.file, "base64");
+        let readStream = new stream.PassThrough();
+        readStream.end(fileContents);
 
-        // const upload = multer({ dest: 'uploads/' });
-        // // Use the upload middleware to handle the file upload
-        // upload.single('file')(req, res, async function (err) {
-        //     if (err) {
-        //         // Handle the error
-        //         return next(err);
-        //     }
-
-        //     // Access the uploaded file using req.file
-        //     const file = req.file;
-
-        //     // Process the file as needed
-        //     // ...
-
-        //     // Send a response
-        //     res.send('File uploaded successfully');
-        // });
-
-
+        let filename = req.params.ref_id;
+        if (report.data != undefined) {
+            filename = report.data.name;
+        }
+        
+        res.set('Content-disposition', 'attachment; filename=' + filename);
+        res.set('Content-Type', 'text/plain');
+      
+        readStream.pipe(res);
     }
 }
 

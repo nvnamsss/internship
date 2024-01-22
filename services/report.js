@@ -1,8 +1,12 @@
 const { ReportRepository } = require('../repositories/report');
 const { v4: uuidv4 } = require('uuid');
+const { WrapError } = require('../errors/error');
+const ErrorList = require('../errors/list');
+const fs = require('fs');
+const { AssignmentRepository } = require('../repositories/assignment');
 
 class ReportService {
-    constructor(reportRepository) {
+    constructor(reportRepository, assignmentRepository) {
         if (!reportRepository) {
             throw new Error('reportRepository is required');
         }
@@ -11,9 +15,21 @@ class ReportService {
             throw new Error('reportRepository must be an instance of reportRepository');
         }
 
+        if (!assignmentRepository) {
+            throw new Error('assignmentRepository is required');
+        }
+
+        if (!(assignmentRepository instanceof AssignmentRepository)) {
+            throw new Error('assignmentRepository must be an instance of assignmentRepository');
+        }
+
         Object.defineProperties(this, {
             reportRepository: {
                 value: reportRepository,
+                writable: false
+            },
+            assignmentRepository: {
+                value: assignmentRepository,
                 writable: false
             }
         });
@@ -32,8 +48,18 @@ class reportService extends ReportService{
      * 
      * @param {ReportRepository} reportRepository 
      */
-    constructor(reportRepository)  {
-        super(reportRepository);
+    constructor(reportRepository, assignmentRepository)  {
+        super(reportRepository, assignmentRepository);
+
+        /**
+         * @type {ReportRepository}
+         */
+        this.reportRepository;
+        
+        /**
+         * @type {AssignmentRepository}
+         */
+        this.assignmentRepository;
     }
 
     async getReport(id) {
@@ -60,22 +86,52 @@ class reportService extends ReportService{
      */
     async createReport(m) {
         m.ref_id = uuidv4();
+        m.data = {
+            name: m.file_name,
+        }
 
-        let [result, err] = this.reportRepository.create(m);
+        let file = await fs.readFileSync(m.file_path);
+        m.file = file;
+
+        let [assignment, assignmentErr] = await this.assignmentRepository.get(m.assignment_id);
+        if (assignmentErr != undefined) {
+            console.log('get assignment got error', assignmentErr);
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, assignmentErr.message)];
+        }
+
+        if (assignment == undefined) {
+            console.log('assignment not found');
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+
+        m.class_id = assignment.class_id;
+        console.log(m);
+
+        let [result, err] = await this.reportRepository.create(m);
         if (err != undefined) {
-            return [undefined, err];
+            console.log('create report got error', err)
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
 
         return [result, undefined];
     }
 
-    async downloadReport(id) {
+    async getFile(ref_id) {
+        let [result, err] = await this.reportRepository.getFileByRefID(ref_id);
+        if (err != undefined) {
+            return [undefined, err];
+        }
 
+        if (result == undefined) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+
+        return [result, undefined];
     }
 }
 
-function newReportService(reportRepository) {
-    return new reportService(reportRepository);
+function newReportService(reportRepository, assignmentRepository) {
+    return new reportService(reportRepository, assignmentRepository);
 }
 
 module.exports = {

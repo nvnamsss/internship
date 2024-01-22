@@ -136,6 +136,24 @@
  *                  example: 1
  */
 
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      AddAssignmentRequest:
+ *          type: object
+ *          properties:
+ *              name:
+ *                  type: string
+ *                  example: "Assignment name"
+ *      AddAssignmentResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ *              data:
+ *                  $ref: '#/components/schemas/AssignmentData'
+ */
 
 /**
  * @swagger

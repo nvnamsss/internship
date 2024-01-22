@@ -33,8 +33,8 @@ class StudentController extends BaseController {
 
     /**
     * @swagger
-    * /student/{id}:
-    *   post:
+    * /v1/student/{id}:
+    *   get:
     *     description: get student
     *     tags: [Student]
     *     parameters:
@@ -42,6 +42,7 @@ class StudentController extends BaseController {
     *         name: id
     *         required: true
     *         description: Numeric ID of the user to retrieve.
+    *         type: integer
     *         schema:
     *           type: integer
     *     responses:
@@ -49,9 +50,9 @@ class StudentController extends BaseController {
     *         description: success
     *         content:
     *           application/json:
-    *             schema:
-    *                type: object
-    *                $ref: '#/components/schemas/GetStudentResponse'
+    *               schema:
+    *                   type: object
+    *                   $ref: '#/components/schemas/GetStudentResponse'
     */
     async get(req, res, next) {
         console.log(this.studentService);
@@ -63,7 +64,7 @@ class StudentController extends BaseController {
 
     /**
     * @swagger
-    * /student:
+    * /v1/student:
     *   post:
     *     description: Create student
     *     tags: [Student]

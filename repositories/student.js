@@ -3,6 +3,7 @@ const ErrorList = require('../errors/list')
 
 class StudentRepository {
     async get(id) {}
+    async getByCode(code) {}
     async create(student) {}
     async update(student) {}
 }
@@ -47,6 +48,25 @@ class sequelizeStudentRepository extends StudentRepository {
         }
     }
 
+    async getByCode(code) {
+        try {
+            const result = await this.model.findOne({
+                where: {
+                    code: code
+                }
+            });
+
+            if (result === null) {
+                return [undefined, ErrorList.ErrorStudentNotFound];
+            }
+
+            return [result, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    }
+    
     async create(student) {
         try {
             const result = await this.model.create(student);

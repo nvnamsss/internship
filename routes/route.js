@@ -18,17 +18,25 @@ const { newSequelizeAssignmentRepository } = require('../repositories/assignment
 const { DefineModel } = require('../models/model');
 const { newSequelizeClassStudentRepository } = require('../repositories/class_student');
 const { newSequelizeMeetingRepository } = require('../repositories/meeting');
+const { newSequelizeTeacherRepository } = require('../repositories/teacher');
+const authentication = require('../middlewares/authentication');
+require('dotenv').config();
 
 function createRoute() {
     const dbConfig = config.get('database')
+    const dbDatabase = process.env.DATABASE_NAME || dbConfig.db || "database";
+    const dbUsername = process.env.DATABASE_USERNAME || dbConfig.username || "username";
+    const dbPassword = process.env.DATABASE_PASSWORD || dbConfig.password || "password";
+    const dbHost = process.env.DATABASE_HOST || dbConfig.host || "localhost";
+    const dbPort = process.env.DATABASE_PORT || dbConfig.port || 3306;
 
-    const sequelize = new Sequelize(dbConfig.db, dbConfig.username, dbConfig.password, {
-        host: dbConfig.host,
-        port: dbConfig.port,
+    const sequelize = new Sequelize(dbDatabase, dbUsername, dbPassword, {
+        host: dbHost,
+        port: dbPort,
         dialect: 'mysql' /* one of 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql' | 'db2' | 'snowflake' | 'oracle' */
     });
     
-    newMigration(sequelize);
+    newMigration_v2(sequelize);
     DefineModel(sequelize);
 
     const studentRepository = newSequelizeStudentRepository(sequelize);
@@ -38,10 +46,11 @@ function createRoute() {
     const assignmentRepository = newSequelizeAssignmentRepository(sequelize);
     const classStudentRepository = newSequelizeClassStudentRepository(sequelize);
     const meetingRepository = newSequelizeMeetingRepository(sequelize);
+    const teacherRepository = newSequelizeTeacherRepository(sequelize);
 
     const studentService = newStudentService(studentRepository);
-    const reportService = newReportService(reportRepository);
-    const userService = newUserService(userRepository);
+    const reportService = newReportService(reportRepository, assignmentRepository);
+    const userService = newUserService(userRepository, teacherRepository, studentRepository);
     const classService = newClassService(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
     
     const studentController = new StudentController(studentService);
@@ -60,13 +69,15 @@ function createRoute() {
 
     const report_v1 = express.Router();
     report_v1.get('/:id', reportController.get.bind(reportController));
-    report_v1.post('/', reportController.create.bind(reportController));
+    report_v1.post('/', authentication, reportController.create.bind(reportController));
+    report_v1.get('/:ref_id/download', reportController.download.bind(reportController));
     // report_v1.get('/:id/download', reportController.download.bind(reportController));
 
     const auth_v1 = express.Router();
     auth_v1.post('/login', userController.login.bind(userController));
     auth_v1.post('/refresh', userController.refreshToken.bind(userController));
     auth_v1.post('/register', userController.register.bind(userController));
+    auth_v1.post('/bind', authentication, userController.bind.bind(userController));
 
     const class_v1 = express.Router();
     class_v1.get('/:id', classController.get.bind(classController));

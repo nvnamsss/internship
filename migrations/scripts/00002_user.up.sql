@@ -4,8 +4,9 @@ CREATE TABLE `users` (
     `password` varchar(255) NOT NULL,
     `email` varchar(255) UNIQUE,
     `role_id` INT NOT NULL,
-    `status` varchar(45) NOT NULL,
-    `refresh_token` varchar(255) NOT NULL,
+    `activated` BOOL NOT NULL DEFAULT TRUE,
+    `refresh_token` varchar(255),
+    `binding` BIGINT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id) 

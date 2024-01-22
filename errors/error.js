@@ -28,7 +28,12 @@ function NewError(message, status, module, detailCode) {
     return new AppError(message, code);
 }
 
+function WrapError(app_error, message) {
+    return new AppError(message, app_error.code);
+}
+
 module.exports = {
     AppError,
     NewError,
+    WrapError,
 }

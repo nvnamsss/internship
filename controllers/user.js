@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const { BaseController } = require('./base');
 const { UserService } = require('../services/user');
-
+const ErrorList = require('../errors/list');
 
 class UserController extends BaseController {
     constructor(userService) {
@@ -25,7 +25,7 @@ class UserController extends BaseController {
 
     /**
      * @swagger
-     * /login:
+     * /v1/auth/login:
      *   post:
      *     description: Login to the application
      *     tags: [Auth]
@@ -33,7 +33,7 @@ class UserController extends BaseController {
      *       required: true
      *       content:
      *         application/json:
-     *           schema:
+     *          schema:
      *             type: object
      *             $ref: '#/components/schemas/LoginRequest'
      *     responses:
@@ -70,17 +70,16 @@ class UserController extends BaseController {
 
     /**
      * @swagger
-     * /auth/refresh:
+     * /v1/auth/refresh:
      *   post:
      *     description: Refresh the access token
      *     tags: [Auth]
      *     requestBody:
-     *       required: true
-     *       content:
-     *         application/json:
-     *           schema:
-     *             type: object
-     *             $ref: '#/components/schemas/RefreshTokenRequest'
+     *      required: true
+     *      content:
+     *        application/json:
+     *          schema:
+     *            $ref: '#/components/schemas/RefreshTokenRequest'
      *     responses:
      *       200:
      *         description: success
@@ -96,6 +95,27 @@ class UserController extends BaseController {
         super.response(res, result, err);
     }
 
+    /**
+     * @swagger
+     * /v1/auth/register:
+     *   post:
+     *     description: register new account
+     *     tags: [Auth]
+     *     requestBody:
+     *      required: true
+     *      content:
+     *        application/json:
+     *          schema:
+     *            $ref: '#/components/schemas/RegisterRequest'
+     *     responses:
+     *       200:
+     *         description: success
+     *         content:
+     *           application/json:
+     *             schema:
+     *                type: object
+     *                $ref: '#/components/schemas/RegisterResponse'
+     */
     async register(req, res) {
         const { username, password, email, role_id } = req.body;
         let m = {
@@ -119,6 +139,51 @@ class UserController extends BaseController {
             res.status(500).json({ message: 'Internal server error' });
         }
 
+    }
+
+    /**
+     * @swagger
+     * /v1/auth/bind:
+     *   post:
+     *     description: bind existing student/teacher to user account
+     *     tags: [Auth]
+     *     requestBody:
+     *      required: true
+     *      content:
+     *        application/json:
+     *          schema:
+     *            $ref: '#/components/schemas/BindRequest'
+     *     responses:
+     *       200:
+     *         description: success
+     *         content:
+     *           application/json:
+     *             schema:
+     *                type: object
+     *                $ref: '#/components/schemas/BindResponse'
+     */
+    async bind(req, res) {
+        const { code, name, kind } = req.body;
+        let m = {
+            user_id: req.payload.user_id,
+            code: code,
+            name: name,
+            kind: kind,
+        }
+
+        console.log('m', m)
+        try {
+            let [result, err] = await this.userService.bind(m);
+            if (err != undefined) {
+                super.response(res, undefined, err);
+                return;
+            }
+
+            super.response(res, result, undefined);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }
 }
 

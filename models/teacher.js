@@ -8,7 +8,16 @@ function defineTeacher(sequelize) {
             primaryKey: true,
             autoIncrement: true
         },
+        code: DataTypes.STRING,
         name: DataTypes.STRING,
+        data: DataTypes.JSON,
+        created_at: DataTypes.DATE,
+        updated_at: DataTypes.DATE,
+        deleted_at: DataTypes.DATE,
+    }, {
+        timestamps: true,
+        createdAt: false,
+        updatedAt: false
     });
 }
 
