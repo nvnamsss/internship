@@ -159,6 +159,25 @@
  * @swagger
  * components:
  *  schemas:
+ *      VerifyAssignmentRequest:
+ *          type: object
+ *          properties:
+ *              name:
+ *                  verified: bool
+ *                  example: false
+ *      VerifyAssignmentResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ *              data:
+ *                  $ref: '#/components/schemas/AssignmentData'
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
  *      AddMeetingRequest:
  *          type: object
  *          properties:

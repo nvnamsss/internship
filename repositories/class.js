@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, Sequelize, Op } = require("sequelize");
 
 class ClassRepository {
     async get(id) { }
@@ -9,6 +9,10 @@ class ClassRepository {
 }
 
 class classRepository extends ClassRepository {
+    /**
+     * 
+     * @param {Sequelize} sequelize 
+     */
     constructor(sequelize) {
         super()
         const model = sequelize.model('class');
@@ -23,6 +27,11 @@ class classRepository extends ClassRepository {
                 writable: false
             }
         });
+
+        /**
+         * @type {Sequelize}
+         */
+        this.sequelize;
     }
 
 
@@ -60,12 +69,15 @@ class classRepository extends ClassRepository {
 
     async search(m) {
         try {
-            let {page, page_size } = m;
-            let offset = (page - 1) * page_size;
+            let {cursor: cursor, page_size } = m;
 
             const result = await this.model.findAll({
                 limit: page_size,
-                offset: offset,
+                where: {
+                    id: {
+                        [Op.gte]: cursor
+                    }
+                },
                 order: [['id', 'ASC']]
             });
             

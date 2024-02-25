@@ -1,8 +1,10 @@
 const { AssignmentRepository } = require('../repositories/assignment');
 const { ClassRepository } = require('../repositories/class');
 const { ClassStudentRepository } = require('../repositories/class_student');
+const {WrapError} = require('../errors/error');
 const ErrorList = require('../errors/list');
 const { MeetingRepository } = require('../repositories/meeting');
+const {EncodeCursor, DecodeCursor} = require('../utils/cursor');
 
 class ClassService {
     /**
@@ -65,10 +67,11 @@ class ClassService {
         });
     }
 
-    async addClass(classObj) { }
-    async addAssignment(assignment) { }
+    async addClass(req) { }
+    async addAssignment(req) { }
+    async verifyAssignment(req) {}
 
-    async search() { }
+    async search(req) { }
 
     async getClassById(id) { }
 
@@ -121,7 +124,7 @@ class classService extends ClassService {
 
         let [result, err] = await this.classRepository.create(value);
         if (err != undefined) {
-            return [undefined, err];
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
 
         let assignments = [];
@@ -153,17 +156,55 @@ class classService extends ClassService {
     async addAssignment(assignment) {
         let [result, err] = await this.assignmentRepository.create(assignment);
         if (err != undefined) {
-            return [undefined, err];
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
 
         return [result, undefined];
     }
 
-    async search(m) {
-        let [result, err] = await this.classRepository.search(m);
+    async verifyAssignment(req) {
+        let [result, assignment, err] = [undefined, undefined, undefined];
+        
+        [assignment, err] = await this.assignmentRepository.get(req.id);
+        if (assignment == undefined) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+        
+        [result, err] = await this.assignmentRepository.update({
+            id: assignment.id,
+            name: assignment.name,
+            verified: req.verified,
+        });
 
         if (err != undefined) {
-            return [undefined, err];
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        [result, err] = await this.assignmentRepository.get(req.id);
+        if (result == undefined) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        return [result, undefined];
+    }
+
+    async search(req) {
+        let cursor = DecodeCursor(req.cursor);
+
+        let [result, err] = await this.classRepository.search({
+            cursor: cursor.cursor,
+            page_size: req.page_size + 1,
+        });
+
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
 
         if (result == undefined) {
@@ -171,11 +212,22 @@ class classService extends ClassService {
         }
 
         let data = [];
-        for (let i = 0; i < result.length; i++) {
+        let last = Math.min(result.length, req.page_size);
+        for (let i = 0; i < last; i++) {
             data.push(result[i]);
         }
 
-        return [data, err];
+        let next_cursor = "";
+        if (result.length > req.page_size) {
+            next_cursor = EncodeCursor(result[last].id);
+        }
+
+        let response = {
+            data: result,
+            next_cursor: next_cursor
+        };
+
+        return [response, err];
     }
 
     async getClassById(id) {

@@ -74,6 +74,7 @@ function createRoute() {
     // report_v1.get('/:id/download', reportController.download.bind(reportController));
 
     const auth_v1 = express.Router();
+    auth_v1.get('/', userController.get.bind(userController));
     auth_v1.post('/login', userController.login.bind(userController));
     auth_v1.post('/refresh', userController.refreshToken.bind(userController));
     auth_v1.post('/register', userController.register.bind(userController));
@@ -83,15 +84,16 @@ function createRoute() {
     class_v1.get('/:id', classController.get.bind(classController));
     class_v1.post('/:id/enroll', classController.enroll.bind(classController));
     class_v1.post('/:id/assignment', classController.addAssignment.bind(classController));
+    class_v1.put('/assignment/:id/verify', classController.verifyAssignment.bind(classController));
     class_v1.post('/:id/meeting', classController.addMeeting.bind(classController));
     class_v1.post('/', classController.create.bind(classController));
     class_v1.get('/', classController.search.bind(classController));
+
 
     v1.use('/student', student_v1);
     v1.use('/report', report_v1);
     v1.use('/class', class_v1);
     v1.use('/auth', auth_v1);
-
     router.use('/v1', v1);
     
     return router;

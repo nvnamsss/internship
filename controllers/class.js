@@ -121,10 +121,9 @@ class ClassController extends BaseController {
     */
     async search(req, res) {
         let m = {
-            page: Number(req.query.page),
+            cursor: req.query.cursor,
             page_size: Number(req.query.page_size),
         };
-        console.log(m);
 
         let [result, err] = await this.classService.search(m);
         if (err != undefined) {
@@ -186,7 +185,7 @@ class ClassController extends BaseController {
     * @swagger
     * /v1/class/{id}/assignment:
     *   post:
-    *     description: Create class
+    *     description: add assignment
     *     tags: [Class]
     *     parameters:
     *       - in: path
@@ -219,6 +218,45 @@ class ClassController extends BaseController {
         };
 
         let [result, err] = await this.classService.addAssignment(assignment);
+        super.response(res, result, err);
+    }
+    
+    /**
+    * @swagger
+    * /v1/class/{id}/assignment:
+    *   put:
+    *     description: verify assignment
+    *     tags: [Class]
+    *     parameters:
+    *       - in: path
+    *         name: id
+    *         required: true
+    *         description: class id
+    *         schema:
+    *           type: integer
+    *     requestBody:
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             $ref: '#/components/schemas/AddAssignmentRequest'
+    *     responses:
+    *       200:
+    *         description: success
+    *         content:
+    *           application/json:
+    *             schema:
+    *                type: object
+    *                $ref: '#/components/schemas/AddAssignmentResponse'
+    */
+    async verifyAssignment(req, res) {
+        let request = {
+            id: req.params.id,
+            verified: req.body.status,
+        }
+
+        let [result, err] = await this.classService.verifyAssignment(request);
         super.response(res, result, err);
     }
 

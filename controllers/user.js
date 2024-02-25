@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { BaseController } = require('./base');
 const { UserService } = require('../services/user');
 const ErrorList = require('../errors/list');
+const jwt = require('jsonwebtoken');
 
 class UserController extends BaseController {
     constructor(userService) {
@@ -21,6 +22,15 @@ class UserController extends BaseController {
                 writable: false
             }
         });
+    }
+
+    async get(req, res) {
+        let request = {
+            access_token: req.headers.authorization,
+        }
+
+        let payload = jwt.verify(request.access_token, process.env.JWT_SECRET);
+        super.response(res, {payload}, undefined);
     }
 
     /**
@@ -171,7 +181,6 @@ class UserController extends BaseController {
             kind: kind,
         }
 
-        console.log('m', m)
         try {
             let [result, err] = await this.userService.bind(m);
             if (err != undefined) {
@@ -185,7 +194,9 @@ class UserController extends BaseController {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
-}
+
+
+} 
 
 module.exports = {
     UserController,

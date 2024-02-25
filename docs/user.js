@@ -20,15 +20,6 @@
  *         password:
  *          type: string
  *          example: "password"
- *     LoginData:
- *       type: object
- *       properties:
- *        token:
- *          type: string
- *          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
- *        refresh_token:
- *          type: string
- *          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
  *     LoginResponse:
  *       type: object
  *       properties:
@@ -36,6 +27,40 @@
  *           $ref: '#/components/schemas/Meta'
  *         data:
  *           $ref: '#/components/schemas/LoginData'
+ * 
+ *     LoginData:
+ *          type: object
+ *          properties:
+ *              token:
+ *                  type: string
+ *                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+ *              refresh_token:
+ *                  type: string
+ *                  example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+ *              user_info:
+ *                  $ref: '#/components/schemas/UserData'
+ *              role_id:
+ *                  type: integer
+ *                  example: 2
+ *              role_name:
+ *                  type: string
+ *                  example: "student"
+ *     UserData:
+ *          type: object
+ *          properties:
+ *              id:
+ *                  type: integer
+ *                  example: 1
+ *              code:
+ *                  type: string
+ *                  example: "1612404"
+ *              name:
+ *                  type: string
+ *                  example: "Nguyen Van A"
+ *              data:
+ *                  type: object
+ *                  example: {}
+ *                  
  */
 
 /**

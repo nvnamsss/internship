@@ -34,7 +34,8 @@ class sequelizeAssignmentRepository extends AssignmentRepository {
                 where: {
                     id: id
                 }
-            })
+            });
+            
             return [result, undefined]
         } catch (err) {
             console.log(err);
@@ -64,17 +65,22 @@ class sequelizeAssignmentRepository extends AssignmentRepository {
 
     async update(obj) {
         try {
-            const result = await this.model.update(obj, {
+            const result = await this.model.update({
+                name: obj.name,
+                verified: obj.verified,
+            }, {
                 where: {
                     id: obj.id
                 }
             });
+
             return [result, undefined]
         } catch (err) {
             console.log(err);
             return [undefined, err]
         }
     }
+
 }
 
 /**

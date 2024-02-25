@@ -100,18 +100,14 @@ class ReportController extends BaseController {
             }
 
             let file = files.file;
-            let m = {
+            let request = {
                 assignment_id: fields.assignment_id[0],
                 student_id: req.payload.student_id,
                 file_path: file[0].filepath,
                 file_name: file[0].originalFilename,
             };
 
-
-            console.log(m);
-            console.log(file);
-            
-            let [result, reportErr] = await this.reportService.createReport(m);
+            let [result, reportErr] = await this.reportService.createReport(request);
             if (reportErr != undefined) {
                 super.response(res, undefined, reportErr);
                 return;
