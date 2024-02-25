@@ -10,6 +10,8 @@ function defineClass(sequelize) {
         },
         code: DataTypes.STRING,
         name: DataTypes.STRING,
+        start_date: DataTypes.DATE,
+        end_date: DataTypes.DATE,
         data: DataTypes.JSON,
     }, {
         timestamps: true,

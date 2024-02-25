@@ -107,13 +107,15 @@ class classService extends ClassService {
         this.meetingRepository;
     }
 
-    async addClass(classObj) {
+    async addClass(req) {
         let value = {
-            code: classObj.code,
-            name: classObj.name,
+            code: req.code,
+            name: req.name,
+            start_date: req.start_date,
+            end_date: req.end_date,
             data: {
-                module_id: classObj.module_id,
-                module_name: classObj.module_name,
+                module_id: req.module_id,
+                module_name: req.module_name,
             }
         }
 
@@ -128,9 +130,9 @@ class classService extends ClassService {
         }
 
         let assignments = [];
-        for (let i = 0; i < classObj.assignments.length; i++) {
+        for (let i = 0; i < req.assignments.length; i++) {
             let assignment = {
-                name: classObj.assignments[i].name,
+                name: req.assignments[i].name,
                 class_id: result.id,
             }
             assignments.push(assignment);
@@ -146,6 +148,8 @@ class classService extends ClassService {
             id: result.id,
             code: result.code,
             name: result.name,
+            start_date: result.start_date,
+            end_date: result.end_date,
             data: result.data,
             assignments: agmResult,
         }
@@ -232,6 +236,14 @@ class classService extends ClassService {
 
     async getClassById(id) {
         let [result, err] = await this.classRepository.get(id);
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        if (result == undefined) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+        
         return [result, err];
     }
 

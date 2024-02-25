@@ -37,7 +37,8 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
     "umzug": "^3.5.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "zlib": "^1.0.5"
   },
   "devDependencies": {
     "better-docs": "^2.7.3"

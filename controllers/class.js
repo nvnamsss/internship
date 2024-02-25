@@ -1,5 +1,6 @@
 const { ClassService } = require('../services/class');
 const { BaseController } = require('./base');
+const ErrorList = require('../errors/list')
 
 class ClassController extends BaseController {
     /**
@@ -48,11 +49,6 @@ class ClassController extends BaseController {
         let [result, err] = await this.classService.getClassById(req.params.id);
         if (err != undefined) {
             super.response(res, undefined, err);
-            return;
-        }
-
-        if (result == undefined) {
-            super.response(res, undefined, ErrorList.ErrorNotFound);
             return;
         }
 

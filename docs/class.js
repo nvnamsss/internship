@@ -83,6 +83,12 @@
  *              code:
  *                  type: string
  *                  example: "1612404"
+ *              start_date:
+ *                  type: string
+ *                  example: "2024-01-05"
+ *              end_data:
+ *                  type: string
+ *                  example: "2024-01-05"
  *              module_id:
  *                  type: integer
  *                  example: 1
