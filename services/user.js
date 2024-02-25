@@ -106,6 +106,7 @@ class userService extends UserService {
         this.studentRepository;
     }
 
+
     async getByUsername(username) {
         let [result, err] = await this.userRepository.getByUsername(username);
         if (err != undefined) {
@@ -141,7 +142,6 @@ class userService extends UserService {
             return [undefined, ErrorList.ErrorNotFound];
         }
 
-        console.log(password);
         // Compare the provided password with the stored password
         const isPasswordValid = await bcrypt.compare(password, result.password);
 
@@ -154,23 +154,40 @@ class userService extends UserService {
             user_id: result.id,
         }
 
-        let role = roleNames[result.role_id]
-        switch (role) {
+        let roleName = roleNames[result.role_id]
+        let data = {
+            role_name: roleName,
+            role_id: result.role_id,
+        };
+
+        switch (roleName) {
             case USER_KIND_ADMIN:
                 break;
             case USER_KIND_TEACHER:
                 if (result.binding != undefined) {
                     payload['teacher_id'] = result.binding;
+                    let [teacher, teacherErr] = await this.teacherRepository.get(result.binding);
+                    if (teacherErr != undefined) {
+                        console.log('get teacher by id got error', err);
+                        return [undefined, teacherErr];
+                    }
+                    data.user_info = teacher;
                 }
                 break;
             case USER_KIND_STUDENT:
                 if (result.binding != undefined) {
                     payload['student_id'] = result.binding;
+                    let [student, studentErr] = await this.studentRepository.get(result.binding);
+                    if (studentErr != undefined) {
+                        console.log('get student by id got error', err);
+                        return [undefined, studentErr];
+                    }
+                    data.user_info = student;
                 }
 
                 break;
             default:
-                console.log('invalid role', role);
+                console.log('invalid role', roleName);
                 return [undefined, ErrorList.ErrorInvalidRole];
         }
 
@@ -178,10 +195,8 @@ class userService extends UserService {
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
         const refreshToken = jwt.sign({ user_id: result.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '1h' });
 
-        let data = {
-            access_token: token,
-            refresh_token: refreshToken
-        };
+        data.access_token= token
+        data.refresh_token= refreshToken
 
         // Return the token to the client
         return [data, undefined];

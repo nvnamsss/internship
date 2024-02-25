@@ -55,7 +55,7 @@ const options = {
             }
         ]
     },
-    apis: ['./controllers/*.js', '/home/crom/git/internship/docs/*.js'], // files containing annotations as above
+    apis: ['./controllers/*.js', './docs/*.js'], // files containing annotations as above
 };
 
 // const options = {
