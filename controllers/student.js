@@ -53,6 +53,8 @@ class StudentController extends BaseController {
     *               schema:
     *                   type: object
     *                   $ref: '#/components/schemas/GetStudentResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async get(req, res, next) {
         console.log(this.studentService);
@@ -83,6 +85,8 @@ class StudentController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/CreateStudentResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async create(req, res, next) {
         console.log(req.body);

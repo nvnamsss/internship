@@ -129,3 +129,26 @@
  *              meta:
  *                  $ref: '#/components/schemas/Meta'
  */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      GetUserInformationResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ *              payload:
+ *                  $ref: '#/components/schemas/GetUserInformationData'
+ * 
+ *      GetUserInformationData:
+ *          type: object
+ *          properties:
+ *              role_name:
+ *                  type: string
+ *                  example: "student"
+ *              user_info:
+ *                  $ref: '#/components/schemas/UserData'
+ *                  
+ */

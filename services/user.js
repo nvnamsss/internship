@@ -131,6 +131,52 @@ class userService extends UserService {
         return [result, undefined];
     }
 
+    async getUserInfo(req) {
+        let user_id = req.user_id;
+
+        let [result, err] = await this.userRepository.getByID(user_id);
+        if (err != undefined) {
+            return [undefined, err];
+        }
+
+        let roleName = roleNames[result.role_id]
+        let data = {
+            role_name: roleName,
+            role_id: result.role_id,
+        };
+
+
+        switch (roleName) {
+            case USER_KIND_ADMIN:
+                break;
+            case USER_KIND_TEACHER:
+                if (result.binding != undefined) {
+                    let [teacher, teacherErr] = await this.teacherRepository.get(result.binding);
+                    if (teacherErr != undefined) {
+                        console.log('get teacher by id got error', err);
+                        return [undefined, WrapError(ErrorList.ErrorInternalServer, teacherErr.message)];
+                    }
+                    data.user_info = teacher;
+                }
+                break;
+            case USER_KIND_STUDENT:
+                if (result.binding != undefined) {
+                    let [student, studentErr] = await this.studentRepository.get(result.binding);
+                    if (studentErr != undefined) {
+                        console.log('get student by id got error', err);
+                        return [undefined, WrapError(ErrorList.ErrorInternalServer, studentErr.message)];
+                    }
+                    data.user_info = student;
+                }
+                break;
+            default:
+                console.log('invalid role', roleName);
+                return [undefined, ErrorList.ErrorInvalidRole];
+        }
+
+        return [data, undefined];
+    }
+
     async login(username, password) {
         let [result, err] = await this.getByUsername(username);
 
@@ -152,6 +198,7 @@ class userService extends UserService {
 
         let payload = {
             user_id: result.id,
+            role_id: result.role_id,
         }
 
         let roleName = roleNames[result.role_id]
@@ -169,7 +216,7 @@ class userService extends UserService {
                     let [teacher, teacherErr] = await this.teacherRepository.get(result.binding);
                     if (teacherErr != undefined) {
                         console.log('get teacher by id got error', err);
-                        return [undefined, teacherErr];
+                        return [undefined, WrapError(ErrorList.ErrorInternalServer, teacherErr.message)];
                     }
                     data.user_info = teacher;
                 }
@@ -180,7 +227,7 @@ class userService extends UserService {
                     let [student, studentErr] = await this.studentRepository.get(result.binding);
                     if (studentErr != undefined) {
                         console.log('get student by id got error', err);
-                        return [undefined, studentErr];
+                        return [undefined, WrapError(ErrorList.ErrorInternalServer, studentErr.message)];
                     }
                     data.user_info = student;
                 }

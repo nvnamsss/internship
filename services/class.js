@@ -130,14 +130,16 @@ class classService extends ClassService {
         }
 
         let assignments = [];
-        for (let i = 0; i < req.assignments.length; i++) {
-            let assignment = {
-                name: req.assignments[i].name,
-                class_id: result.id,
+        if (req.assignments) {
+            for (let i = 0; i < req.assignments.length; i++) {
+                let assignment = {
+                    name: req.assignments[i].name,
+                    class_id: result.id,
+                }
+                assignments.push(assignment);
             }
-            assignments.push(assignment);
         }
-
+        
         let [agmResult, agmErr] = await this.assignmentRepository.batchCreate(assignments);
         if (agmErr != undefined) {
             return [undefined, agmErr];

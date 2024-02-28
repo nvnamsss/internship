@@ -50,6 +50,8 @@ class ReportController extends BaseController {
     *               schema:
     *                   type: object
     *                   $ref: '#/components/schemas/GetReportResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async get(req, res, next) {
         let [result, err] = await this.reportService.getReport(req.params.id);
@@ -90,6 +92,8 @@ class ReportController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/CreateReportResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async create(req, res, next) {
         const form = formidable({});
@@ -136,6 +140,8 @@ class ReportController extends BaseController {
     *     responses:
     *       200:
     *         description: success
+    *     security:
+    *     - BasicAuthToken: []
     */
     async download(req, res, next) {
         let [report, err] = await this.reportService.getFile(req.params.ref_id);

@@ -64,12 +64,16 @@ async function up({ context: sequelize }) {
         {
             id: 1,
             code: 'I32',
-            name: 'Internship 32'
+            name: 'Internship 32',
+            start_date: new Date(),
+            end_date: new Date()
         },
         {
             id: 2,
             code: 'C33',
-            name: 'Internship 33'
+            name: 'Internship 33',
+            start_date: new Date(),
+            end_date: new Date()
         }
     ]
 
@@ -95,23 +99,23 @@ async function up({ context: sequelize }) {
     let class_students = [
         {
             class_id: 1,
-            student_id: 1
+            student_id: 1,
         },
         {
             class_id: 1,
-            student_id: 2
+            student_id: 2,
         },
         {
             class_id: 1,
-            student_id: 3
+            student_id: 3,
         },
         {
             class_id: 2,
-            student_id: 4
+            student_id: 4,
         },
         {
             class_id: 2,
-            student_id: 5
+            student_id: 5,
         }
     ]
 
@@ -144,13 +148,15 @@ async function up({ context: sequelize }) {
             id: 2,
             username: 'teacher',
             password: await bcrypt.hash('1', 10),
-            role_id: 2
+            role_id: 2,
+            binding: 1
         },
         {
             id: 3,
             username: 'student',
             password: await bcrypt.hash('1', 10),
-            role_id: 3
+            role_id: 3,
+            binding: 1
         }
     ]
 

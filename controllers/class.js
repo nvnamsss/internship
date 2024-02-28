@@ -76,6 +76,8 @@ class ClassController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/CreateClassResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async create(req, res) {
         let [result, err] = await this.classService.addClass(req.body);
@@ -114,6 +116,8 @@ class ClassController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/SearchClassResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async search(req, res) {
         let m = {
@@ -158,6 +162,8 @@ class ClassController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/EnrollClassResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async enroll(req, res) {
         let class_id = req.params.id;
@@ -205,6 +211,8 @@ class ClassController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/AddAssignmentResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async addAssignment(req, res) {
         let id = req.params.id;
@@ -245,6 +253,8 @@ class ClassController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/AddAssignmentResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async verifyAssignment(req, res) {
         let request = {
@@ -284,6 +294,8 @@ class ClassController extends BaseController {
     *             schema:
     *                type: object
     *                $ref: '#/components/schemas/AddMeetingResponse'
+    *     security:
+    *     - BasicAuthToken: []
     */
     async addMeeting(req, res) {
         let id = req.params.id;

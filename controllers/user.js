@@ -24,13 +24,37 @@ class UserController extends BaseController {
         });
     }
 
+    /**
+     * @swagger
+     * /v1/auth:
+     *   get:
+     *     description: get user information
+     *     tags: [Auth]
+     *     responses:
+     *       200:
+     *         description: success
+     *         content:
+     *           application/json:
+     *             schema:
+     *                type: object
+     *                $ref: '#/components/schemas/GetUserInformationResponse'
+     *     security:
+     *     - BasicAuthToken: []
+     */
     async get(req, res) {
-        let request = {
-            access_token: req.headers.authorization,
-        }
+        try {
+            let payload = req.payload;
 
-        let payload = jwt.verify(request.access_token, process.env.JWT_SECRET);
-        super.response(res, {payload}, undefined);
+            let [result, err] = await this.userService.getUserInfo({ user_id: payload.user_id });
+            if (err != undefined) {
+                super.response(res, undefined, err);
+                return;
+            }
+            super.response(res, result, undefined);
+        } catch (error) {
+            super.response(res, undefined, ErrorList.ErrUnauthorized);
+        }
+        
     }
 
     /**

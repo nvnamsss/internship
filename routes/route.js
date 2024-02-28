@@ -74,7 +74,7 @@ function createRoute() {
     // report_v1.get('/:id/download', reportController.download.bind(reportController));
 
     const auth_v1 = express.Router();
-    auth_v1.get('/', userController.get.bind(userController));
+    auth_v1.get('/', authentication, userController.get.bind(userController));
     auth_v1.post('/login', userController.login.bind(userController));
     auth_v1.post('/refresh', userController.refreshToken.bind(userController));
     auth_v1.post('/register', userController.register.bind(userController));

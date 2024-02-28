@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
       - name: internship-application
-        image: registry.digitalocean.com/internship/internship-app:latest
+        image: registry.digitalocean.com/internship/internship-app:0.0.9
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
