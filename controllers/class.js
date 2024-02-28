@@ -108,6 +108,12 @@ class ClassController extends BaseController {
     *         description: page size
     *         schema:
     *           type: integer
+    *       - in: query
+    *         name: major_id
+    *         required: false
+    *         description: major id
+    *         schema:
+    *           type: integer
     *     responses:
     *       200:
     *         description: success
@@ -123,6 +129,7 @@ class ClassController extends BaseController {
         let m = {
             cursor: req.query.cursor,
             page_size: Number(req.query.page_size),
+            major_id: req.query.major_id,
         };
 
         let [result, err] = await this.classService.search(m);
@@ -263,6 +270,16 @@ class ClassController extends BaseController {
         }
 
         let [result, err] = await this.classService.verifyAssignment(request);
+        super.response(res, result, err);
+    }
+
+    async evaluateAssignment(req, res) {
+        let request = {
+            id: req.params.id,
+            score: req.body.score,
+        }
+
+        let [result, err] = await this.classService.evaluateAssignment(request);
         super.response(res, result, err);
     }
 

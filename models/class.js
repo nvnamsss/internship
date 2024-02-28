@@ -10,6 +10,7 @@ function defineClass(sequelize) {
         },
         code: DataTypes.STRING,
         name: DataTypes.STRING,
+        major_id: DataTypes.INTEGER,
         start_date: DataTypes.DATE,
         end_date: DataTypes.DATE,
         data: DataTypes.JSON,
@@ -39,7 +40,9 @@ function defineClassAssociation(sequelize) {
     const assigment_model = sequelize.model(Values.ASSIGNMENT_MODEL_NAME);
     const student_model = sequelize.model(Values.STUDENT_MODEL_NAME);
     const class_student_model = sequelize.model(Values.CLASS_STUDENT_MODEL_NAME);
+    const major_model = sequelize.model(Values.MAJOR_MODEL_NAME);
 
+    class_model.hasOne(major_model, { foreignKey: 'id', sourceKey: 'major_id' });
     class_model.hasMany(assigment_model, { foreignKey: 'class_id', sourceKey: 'id' });
     class_model.belongsToMany(student_model, { through: class_student_model, foreignKey: 'class_id', sourceKey: 'id' });
     student_model.belongsToMany(class_model, { through: class_student_model, foreignKey: 'student_id', sourceKey: 'id' });

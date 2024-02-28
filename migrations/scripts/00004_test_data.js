@@ -4,6 +4,14 @@ const bcrypt = require('bcrypt');
 async function up({ context: sequelize }) {
     let queryInterface = sequelize.getQueryInterface();
 
+    let majors = [
+        {
+            id: 1,
+            code: 'CS',
+            name: 'Computer Science',
+        }
+    ]
+
     let students = [
         {
             id: 1,
@@ -65,6 +73,7 @@ async function up({ context: sequelize }) {
             id: 1,
             code: 'I32',
             name: 'Internship 32',
+            major_id: 1,
             start_date: new Date(),
             end_date: new Date()
         },
@@ -72,6 +81,7 @@ async function up({ context: sequelize }) {
             id: 2,
             code: 'C33',
             name: 'Internship 33',
+            major_id: 1,
             start_date: new Date(),
             end_date: new Date()
         }
@@ -160,6 +170,7 @@ async function up({ context: sequelize }) {
         }
     ]
 
+    await queryInterface.bulkInsert('majors', majors);
     await queryInterface.bulkInsert('students', students);
     await queryInterface.bulkInsert('teachers', teachers);
     await queryInterface.bulkInsert('classes', classes);

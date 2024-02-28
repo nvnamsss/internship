@@ -1,25 +1,25 @@
 const { DataTypes } = require('sequelize');
-const { ASSIGNMENT_MODEL_NAME } = require('./const');
+const { MAJOR_MODEL_NAME } = require('./const');
 
-function defineAssignment(sequelize) {
-    sequelize.define(ASSIGNMENT_MODEL_NAME, {
+function defineMajor(sequelize) {
+    sequelize.define(MAJOR_MODEL_NAME, {
         id: {
             type: DataTypes.INTEGER,
             primaryKey: true,
             autoIncrement: true
         },
-        class_id: DataTypes.INTEGER,
+        code: DataTypes.STRING,
         name: DataTypes.STRING,
         data: DataTypes.JSON,
-        verified: DataTypes.BOOLEAN,
-        score: DataTypes.INTEGER,
+        created_at: DataTypes.DATE,
+        updated_at: DataTypes.DATE,
     }, {
         timestamps: true,
         createdAt: false,
         updatedAt: false
-    })
+    });
 }
 
 module.exports = {
-    defineAssignment,
+    defineMajor,
 }

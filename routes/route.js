@@ -20,6 +20,9 @@ const { newSequelizeClassStudentRepository } = require('../repositories/class_st
 const { newSequelizeMeetingRepository } = require('../repositories/meeting');
 const { newSequelizeTeacherRepository } = require('../repositories/teacher');
 const authentication = require('../middlewares/authentication');
+const { newSequelizeMajorRepository } = require('../repositories/major');
+const { newMajorService } = require('../services/major');
+const { MajorController } = require('../controllers/major');
 require('dotenv').config();
 
 function createRoute() {
@@ -47,16 +50,19 @@ function createRoute() {
     const classStudentRepository = newSequelizeClassStudentRepository(sequelize);
     const meetingRepository = newSequelizeMeetingRepository(sequelize);
     const teacherRepository = newSequelizeTeacherRepository(sequelize);
+    const majorRepository = newSequelizeMajorRepository(sequelize);
 
     const studentService = newStudentService(studentRepository);
     const reportService = newReportService(reportRepository, assignmentRepository);
     const userService = newUserService(userRepository, teacherRepository, studentRepository);
-    const classService = newClassService(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
+    const classService = newClassService(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository);
+    const majorService = newMajorService(majorRepository);
     
     const studentController = new StudentController(studentService);
     const reportController = new ReportController(reportService);
     const userController = new UserController(userService);
     const classController = new ClassController(classService);
+    const majorController = new MajorController(majorService);
 
     const router = express.Router();
 
@@ -89,11 +95,16 @@ function createRoute() {
     class_v1.post('/', classController.create.bind(classController));
     class_v1.get('/', classController.search.bind(classController));
 
+    const major_v1 = express.Router();
+    major_v1.get('/', majorController.getAll.bind(majorController));
+
 
     v1.use('/student', student_v1);
     v1.use('/report', report_v1);
     v1.use('/class', class_v1);
     v1.use('/auth', auth_v1);
+    v1.use('/major', major_v1);
+
     router.use('/v1', v1);
     
     return router;

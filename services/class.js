@@ -5,6 +5,7 @@ const {WrapError} = require('../errors/error');
 const ErrorList = require('../errors/list');
 const { MeetingRepository } = require('../repositories/meeting');
 const {EncodeCursor, DecodeCursor} = require('../utils/cursor');
+const { MajorRepository } = require('../repositories/major');
 
 class ClassService {
     /**
@@ -14,7 +15,7 @@ class ClassService {
      * @param {ClassStudentRepository} classStudentRepository 
      * @param {MeetingRepository} meetingRepository
      */
-    constructor(classRepository, assignmentRepository, classStudentRepository, meetingRepository) {
+    constructor(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository) {
         if (!classRepository) {
             throw new Error('ClassService must be constructed with a classRepository')
         }
@@ -47,6 +48,14 @@ class ClassService {
             throw new Error('meetingRepository must be an instance of MeetingRepository')
         }
 
+        if (!majorRepository) {
+            throw new Error('ClassService must be constructed with a majorRepository')
+        }
+
+        if (!(majorRepository instanceof MajorRepository)) {
+            throw new Error('majorRepository must be an instance of MajorRepository')
+        }
+
         Object.defineProperties(this, {
             classRepository: {
                 value: classRepository,
@@ -62,6 +71,10 @@ class ClassService {
             },
             meetingRepository: {
                 value: meetingRepository,
+                writable: false
+            },
+            majorRepository: {
+                value: majorRepository,
                 writable: false
             },
         });
@@ -84,8 +97,9 @@ class classService extends ClassService {
         assignmentRepository, 
         classStudentRepository,
         meetingRepository,
+        majorRepository,
         ) {
-        super(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
+        super(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository);
 
         /**
          * @type {ClassRepository}
@@ -105,12 +119,18 @@ class classService extends ClassService {
          * @type {MeetingRepository}
          */
         this.meetingRepository;
+
+        /**
+         * @type {MajorRepository}
+         */
+        this.majorRepository;
     }
 
     async addClass(req) {
         let value = {
             code: req.code,
             name: req.name,
+            major_id: req.major_id,
             start_date: req.start_date,
             end_date: req.end_date,
             data: {
@@ -119,12 +139,19 @@ class classService extends ClassService {
             }
         }
 
-        let [check] = await this.classRepository.getByCode(value.code);
-        if (check != null) {
+        let [major, result, err] = [undefined, undefined, undefined];
+
+        [major, err] = await this.majorRepository.get(value.major_id);
+        if (major == undefined) {
+            return [undefined, WrapError(ErrorList.ErrorNotFound, "major not found")];
+        }
+
+        [result] = await this.classRepository.getByCode(value.code);
+        if (result != null) {
             return [undefined, ErrorList.ErrorClassCodeDuplicate];
         }
 
-        let [result, err] = await this.classRepository.create(value);
+        [result, err] = await this.classRepository.create(value);
         if (err != undefined) {
             return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
@@ -154,6 +181,7 @@ class classService extends ClassService {
             end_date: result.end_date,
             data: result.data,
             assignments: agmResult,
+            major: major,
         }
 
         return [data, undefined];
@@ -201,12 +229,47 @@ class classService extends ClassService {
         return [result, undefined];
     }
 
+    async evaluateAssignment(req) {
+        let [result, assignment, err] = [undefined, undefined, undefined];
+        
+        [assignment, err] = await this.assignmentRepository.get(req.id);
+        if (assignment == undefined) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+        
+        [result, err] = await this.assignmentRepository.update({
+            id: assignment.id,
+            name: assignment.name,
+            verified: assignment.verified,
+            score: req.score,
+        });
+
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        [result, err] = await this.assignmentRepository.get(req.id);
+        if (result == undefined) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        return [result, undefined];
+    }
+
     async search(req) {
         let cursor = DecodeCursor(req.cursor);
 
         let [result, err] = await this.classRepository.search({
             cursor: cursor.cursor,
             page_size: req.page_size + 1,
+            major_id: req.major_id,
         });
 
         if (err != undefined) {
@@ -393,6 +456,7 @@ function generateSlots(from, to, interval) {
  * @param {AssignmentRepository} assignmentRepository 
  * @param {ClassStudentRepository} classStudentRepository
  * @param {MeetingRepository} meetingRepository 
+ * @param {MajorRepository} majorRepository
  * @returns 
  */
 function newClassService(
@@ -400,8 +464,9 @@ function newClassService(
     assignmentRepository,
     classStudentRepository,
     meetingRepository,
+    majorRepository,
 ) {
-    return new classService(classRepository, assignmentRepository, classStudentRepository, meetingRepository);
+    return new classService(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository);
 }
 
 module.exports = {

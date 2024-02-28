@@ -49,6 +49,8 @@
  *                  type: array
  *                  items:
  *                      $ref: '#/components/schemas/AssignmentData'
+ *              major:
+ *                  $ref: '#/components/schemas/MajorData'
  *              data:
  *                  type: object
  * 
@@ -83,6 +85,9 @@
  *              code:
  *                  type: string
  *                  example: "1612404"
+ *              major_id:
+ *                  type: integer
+ *                  example: 1
  *              start_date:
  *                  type: string
  *                  example: "2024-01-05"

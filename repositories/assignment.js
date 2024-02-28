@@ -81,6 +81,22 @@ class sequelizeAssignmentRepository extends AssignmentRepository {
         }
     }
 
+    async updateScore(obj) {
+        try {
+            const result = await this.model.update({
+                score: obj.score,
+            }, {
+                where: {
+                    id: obj.id
+                }
+            });
+
+            return [result, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    }
 }
 
 /**

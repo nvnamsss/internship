@@ -5,7 +5,7 @@ class ClassRepository {
     async getByCode(code) { }
     async create(c) { }
     async update(c) { }
-    async search(m) {}
+    async search(m) { }
 }
 
 class classRepository extends ClassRepository {
@@ -41,10 +41,16 @@ class classRepository extends ClassRepository {
                 where: {
                     id: id
                 },
-                include: {
-                    model: this.sequelize.model('assignment'),
-                    as: 'assignments',
-                }
+                include: [
+                    {
+                        model: this.sequelize.model('assignment'),
+                        as: 'assignments',
+                    },
+                    {
+                        model: this.sequelize.model('major'),
+                        as: 'major',
+                    }
+                ]
             })
             return [result, undefined]
         } catch (err) {
@@ -67,20 +73,36 @@ class classRepository extends ClassRepository {
         }
     }
 
-    async search(m) {
+    async search(req) {
         try {
-            let {cursor: cursor, page_size } = m;
-
-            const result = await this.model.findAll({
-                limit: page_size,
+            let { cursor: cursor, page_size, major_id } = req;
+            let query = {
                 where: {
                     id: {
                         [Op.gte]: cursor
                     }
                 },
-                order: [['id', 'ASC']]
-            });
+                order: [['id', 'ASC']],
+                include: [
+                    {
+                        model: this.sequelize.model('major'),
+                        as: 'major',
+                    }
+                ]
+            };
+
+            if (page_size > 0) {
+                query.limit = page_size;
+            }
             
+            if (major_id > 0) {
+                query.where.major_id = {
+                    [Op.eq]: major_id
+                };
+            }
+
+            const result = await this.model.findAll(query);
+
             return [result, undefined]
         } catch (err) {
             console.log(err);

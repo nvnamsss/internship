@@ -6,6 +6,7 @@ const TEACHER_MODEL_NAME = 'teacher';
 const STUDENT_MODEL_NAME = 'student';
 const CLASS_STUDENT_MODEL_NAME = 'class_student';
 const MEETING_MODEL_NAME = 'meeting';
+const MAJOR_MODEL_NAME = 'major';
 
 module.exports = {
     ASSIGNMENT_MODEL_NAME,
@@ -16,4 +17,5 @@ module.exports = {
     STUDENT_MODEL_NAME,
     CLASS_STUDENT_MODEL_NAME,
     MEETING_MODEL_NAME,
+    MAJOR_MODEL_NAME,
 }
