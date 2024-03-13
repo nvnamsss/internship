@@ -1,4 +1,5 @@
 const { Sequelize, DataTypes } = require('sequelize');
+const ErrorList = require('../errors/list');
 
 class TeacherRepository {
     constructor() {
@@ -44,7 +45,12 @@ class teacherRepository extends TeacherRepository {
                     id: id
                 }
             })
-            return [result, undefined]
+
+            if (result === null) {
+                return [undefined, ErrorList.ErrorNotFound];
+            }
+
+            return [result.dataValues, undefined]
         } catch (err) {
             console.log(err);
             return [undefined, err]
@@ -61,8 +67,21 @@ class teacherRepository extends TeacherRepository {
         }
     }
 
-    async update(student) {
-        return StudentRepository.update(student);
+    async update(teacher) {
+        try {
+            const result = await this.model.update({
+                name: teacher.name,
+                data: teacher.data,
+            }, {
+                where: {
+                    id: teacher.id
+                }
+            });
+            return [result, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
     }
 }
 

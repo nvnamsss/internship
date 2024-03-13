@@ -51,9 +51,14 @@
  *                      $ref: '#/components/schemas/AssignmentData'
  *              major:
  *                  $ref: '#/components/schemas/MajorData'
+ *              student:
+ *                  type: array
+ *                  items:
+ *                      $ref: '#/components/schemas/StudentData'
  *              data:
  *                  type: object
- * 
+ *      
+ *              
  */
 
 /**
@@ -147,43 +152,6 @@
  *                  example: 1
  */
 
-/**
- * @swagger
- * components:
- *  schemas:
- *      AddAssignmentRequest:
- *          type: object
- *          properties:
- *              name:
- *                  type: string
- *                  example: "Assignment name"
- *      AddAssignmentResponse:
- *          type: object
- *          properties:
- *              meta:
- *                  $ref: '#/components/schemas/Meta'
- *              data:
- *                  $ref: '#/components/schemas/AssignmentData'
- */
-
-/**
- * @swagger
- * components:
- *  schemas:
- *      VerifyAssignmentRequest:
- *          type: object
- *          properties:
- *              name:
- *                  verified: bool
- *                  example: false
- *      VerifyAssignmentResponse:
- *          type: object
- *          properties:
- *              meta:
- *                  $ref: '#/components/schemas/Meta'
- *              data:
- *                  $ref: '#/components/schemas/AssignmentData'
- */
 
 /**
  * @swagger
@@ -219,4 +187,40 @@
  *              count:
  *                  type: integer
  *                  example: 1
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      EvaluateStudentRequest:
+ *          type: object
+ *          properties:
+ *              score:
+ *                  type: float
+ *                  example: 3.2
+ *              comment:
+ *                  type: string
+ *                  example: "Very good"
+ *      EvaluateStudentResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ *              data:
+ *                  type: object
+ *                  properties:
+ *                      id:
+ *                          type: int
+ *                          example: 1
+ *                      score:
+ *                          type: float
+ *                          example: 3.2
+ *                      comment:
+ *                          type: string
+ *                          example: "Very good"
+ *                      status:
+ *                          type: string
+ *                          example: "pass/failed"
+ * 
  */

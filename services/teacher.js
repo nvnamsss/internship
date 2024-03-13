@@ -1,22 +1,22 @@
-const { StudentRepository, meo } = require('../repositories/student');
+const { TeacherRepository, meo } = require('../repositories/teacher');
 
 const ErrorList = require('../errors/list');
 const {WrapError} = require('../errors/error');
 
-class StudentService {
-    constructor(studentRepository) {
-        if (!studentRepository) {
-            throw new Error('studentRepository is required');
+class TeacherService {
+    constructor(teacherRepository) {
+        if (!teacherRepository) {
+            throw new Error('teacherRepository is required');
         }
 
-        if (!(studentRepository instanceof StudentRepository)) {
-            throw new Error('studentRepository must be an instance of StudentRepository');
+        if (!(teacherRepository instanceof TeacherRepository)) {
+            throw new Error('teacherRepository must be an instance of TeacherRepository');
         }
 
         Object.defineProperties(this, {
 
-            studentRepository: {
-                value: studentRepository,
+            teacherRepository: {
+                value: teacherRepository,
                 writable: false
             }
 
@@ -24,8 +24,8 @@ class StudentService {
     }
 
     async get(id) { }
-    async create(student) { }
-    async update(student) { }
+    async create(teacher) { }
+    async update(teacher) { }
 }
 
 /**
@@ -33,18 +33,18 @@ class StudentService {
  * @constructor
  * @public
  */
-class studentService extends StudentService {
-    constructor(studentRepository) {
-        super(studentRepository);
+class teacherService extends TeacherService {
+    constructor(teacherRepository) {
+        super(teacherRepository);
 
         /**
-         * @type {StudentRepository}
+         * @type {TeacherRepository}
          */
-        this.studentRepository;
+        this.teacherRepository;
     }
 
     async get(id) {
-        let [result, err] = await this.studentRepository.get(id);
+        let [result, err] = await this.teacherRepository.get(id);
         if (err != undefined) {
             return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
@@ -61,15 +61,15 @@ class studentService extends StudentService {
         return [data, undefined];
     }
 
-    async create(student) {
-        let [result, err] = await this.studentRepository.create(student);
+    async create(teacher) {
+        let [result, err] = await this.teacherRepository.create(teacher);
         return [result, err];
     }
 
     async update(req) {
         let [result, err] = [undefined, undefined];
 
-        [result, err] = await this.studentRepository.get(req.id);
+        [result, err] = await this.teacherRepository.get(req.id);
         if (err != undefined) {
             return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
@@ -90,12 +90,12 @@ class studentService extends StudentService {
         result.data.nationality = req.nationality;
         result.data.birthday = req.birthday;
 
-        [result, err] = await this.studentRepository.update(result);
+        [result, err] = await this.teacherRepository.update(result);
         if (err != undefined) {
             return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
         
-        [result, err] = await this.studentRepository.get(req.id);
+        [result, err] = await this.teacherRepository.get(req.id);
         if (err != undefined) {
             return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
@@ -105,11 +105,11 @@ class studentService extends StudentService {
 }
 
 
-function newStudentService(studentRepository) {
-    return new studentService(studentRepository);
+function newTeacherService(teacherRepository) {
+    return new teacherService(teacherRepository);
 }
 
 module.exports = {
-    StudentService,
-    newStudentService,
+    TeacherService,
+    newTeacherService,
 }

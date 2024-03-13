@@ -1,11 +1,10 @@
 const { Op } = require("sequelize");
-
 class ClassStudentRepository {
+    async get(classID, studentID) {}
     async getStudentsByClassId(classId) { }
-    async getStudentInClass(classId, studentID) { }
-    async getStudentsInClass(classId, studentIDs) { }
     async addStudentsToClass(classId, studentIDs) { }
     async removeStudentFromClass(classId, studentID) { }
+    async update(req) {}
     /**
      * Get k random records with class_id from class excluding excluded students
      * @param {Number} class_id
@@ -32,6 +31,26 @@ class classStudentRepository extends ClassStudentRepository {
         });
     }
 
+    async get(classID, studentID) { 
+        try {
+            const result = await this.model.findOne({
+                where: {
+                    class_id: classID,
+                    student_id: studentID
+                }
+            })
+
+            if (!result) {
+                return [undefined, undefined];
+            }
+
+            return [result.dataValues, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    }
+
     async getStudentsByClassId(classId) {
         try {
             const result = await this.model.findAll({
@@ -39,38 +58,7 @@ class classStudentRepository extends ClassStudentRepository {
                     class_id: classId
                 }
             })
-            return [result, undefined]
-        } catch (err) {
-            console.log(err);
-            return [undefined, err]
-        }
-    }
 
-    async getStudentInClass(classId, studentId) {
-        try {
-            const result = await this.model.findOne({
-                where: {
-                    classId: classId,
-                    studentId: studentId
-                }
-            })
-            return [result, undefined]
-        } catch (err) {
-            console.log(err);
-            return [undefined, err]
-        }
-    }
-
-    async getStudentsInClass(classID, studentIDs) {
-        try {
-            const result = await this.model.findOne({
-                where: {
-                    class_id: classID,
-                    student_id: {
-                        [Op.in]: studentIDs,
-                    }
-                }
-            })
             return [result, undefined]
         } catch (err) {
             console.log(err);
@@ -131,6 +119,27 @@ class classStudentRepository extends ClassStudentRepository {
             console.log(err);
             return [undefined, err];
         }
+    }
+
+    async update(req) {
+        try {
+            const result = await this.model.update({
+                score: req.score,
+                comment: req.comment,
+                status: req.status
+            }, {
+                where: {
+                    class_id: req.class_id,
+                    student_id: req.student_id
+                }
+            });
+            
+            return [result, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    
     }
 }
 

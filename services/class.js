@@ -1,11 +1,13 @@
 const { AssignmentRepository } = require('../repositories/assignment');
 const { ClassRepository } = require('../repositories/class');
 const { ClassStudentRepository } = require('../repositories/class_student');
+const { StudentRepository } = require('../repositories/student');
 const {WrapError} = require('../errors/error');
 const ErrorList = require('../errors/list');
 const { MeetingRepository } = require('../repositories/meeting');
 const {EncodeCursor, DecodeCursor} = require('../utils/cursor');
 const { MajorRepository } = require('../repositories/major');
+const { score2status } = require('../utils/score');
 
 class ClassService {
     /**
@@ -15,7 +17,7 @@ class ClassService {
      * @param {ClassStudentRepository} classStudentRepository 
      * @param {MeetingRepository} meetingRepository
      */
-    constructor(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository) {
+    constructor(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository, studentRepository) {
         if (!classRepository) {
             throw new Error('ClassService must be constructed with a classRepository')
         }
@@ -56,6 +58,14 @@ class ClassService {
             throw new Error('majorRepository must be an instance of MajorRepository')
         }
 
+        if (!studentRepository) {
+            throw new Error('ClassService must be constructed with a studentRepository')
+        }
+
+        if (!(studentRepository instanceof StudentRepository)) {
+            throw new Error('studentRepository must be an instance of StudentRepository')
+        }
+
         Object.defineProperties(this, {
             classRepository: {
                 value: classRepository,
@@ -77,6 +87,10 @@ class ClassService {
                 value: majorRepository,
                 writable: false
             },
+            studentRepository: {
+                value: studentRepository,
+                writable: false
+            }
         });
     }
 
@@ -98,8 +112,9 @@ class classService extends ClassService {
         classStudentRepository,
         meetingRepository,
         majorRepository,
+        studentRepository
         ) {
-        super(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository);
+        super(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository, studentRepository);
 
         /**
          * @type {ClassRepository}
@@ -124,6 +139,11 @@ class classService extends ClassService {
          * @type {MajorRepository}
          */
         this.majorRepository;
+
+        /**
+         * @type {StudentRepository}
+         */
+        this.studentRepository;
     }
 
     async addClass(req) {
@@ -229,40 +249,6 @@ class classService extends ClassService {
         return [result, undefined];
     }
 
-    async evaluateAssignment(req) {
-        let [result, assignment, err] = [undefined, undefined, undefined];
-        
-        [assignment, err] = await this.assignmentRepository.get(req.id);
-        if (assignment == undefined) {
-            return [undefined, ErrorList.ErrorNotFound];
-        }
-        if (err != undefined) {
-            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
-        }
-        
-        [result, err] = await this.assignmentRepository.update({
-            id: assignment.id,
-            name: assignment.name,
-            verified: assignment.verified,
-            score: req.score,
-        });
-
-        if (err != undefined) {
-            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
-        }
-
-        [result, err] = await this.assignmentRepository.get(req.id);
-        if (result == undefined) {
-            return [undefined, ErrorList.ErrorNotFound];
-        }
-
-        if (err != undefined) {
-            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
-        }
-
-        return [result, undefined];
-    }
-
     async search(req) {
         let cursor = DecodeCursor(req.cursor);
 
@@ -300,7 +286,9 @@ class classService extends ClassService {
     }
 
     async getClassById(id) {
-        let [result, err] = await this.classRepository.get(id);
+        let data = {};
+        let [result, studentClass, students, err] = [undefined, undefined, undefined, undefined];
+        [result, err] = await this.classRepository.get(id);
         if (err != undefined) {
             return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
         }
@@ -308,8 +296,39 @@ class classService extends ClassService {
         if (result == undefined) {
             return [undefined, ErrorList.ErrorNotFound];
         }
+
+        data = {
+            ...result
+        };
         
-        return [result, err];
+        [studentClass, err] = await this.classStudentRepository.getStudentsByClassId(id);
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        [students, err] = await this.studentRepository.getByIDs(studentClass.map(sc => sc.student_id));
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+
+        let studentId2score = {};
+        studentClass.map(sc => {
+            studentId2score[sc.student_id] = {
+                score: sc.score,
+                status: sc.status,
+                comment: sc.comment,
+            };
+        })
+
+        students.forEach(student => {
+            student.score = studentId2score[student.id].score;
+            student.status = studentId2score[student.id].status;
+            student.comment = studentId2score[student.id].comment;
+        });
+
+        data.students = students;
+
+        return [data, err];
     }
 
     async deleteClassById(id) {
@@ -428,6 +447,41 @@ class classService extends ClassService {
             count: result.length,
         }, err];
     }
+
+    
+
+    async evaluate(req) {
+        let [result, err] = [undefined, undefined];
+        [result, err] = await this.classStudentRepository.get(req.student_id, req.class_id);
+        if (err != undefined) {
+            return [undefined, ErrorList.ErrorInternalServer];
+        }
+
+        if (!result) {
+            return [undefined, ErrorList.ErrorNotFound];
+        }
+
+        [result, err] = await this.classStudentRepository.update({
+            class_id: req.class_id,
+            student_id: req.student_id,
+            score: req.score,
+            status: score2status(req.score),
+            comment: req.comment,
+        });
+
+        if (err != undefined) {
+            return [undefined, WrapError(ErrorList.ErrorInternalServer, err.message)];
+        }
+        let data = {
+            id: req.class_id,
+            student_id: req.student_id,
+            score: req.score,
+            status: score2status(req.score),
+            comment: req.comment,
+        }
+
+        return [data, undefined];
+    }
 }
 
 function generateSlots(from, to, interval) {
@@ -457,6 +511,7 @@ function generateSlots(from, to, interval) {
  * @param {ClassStudentRepository} classStudentRepository
  * @param {MeetingRepository} meetingRepository 
  * @param {MajorRepository} majorRepository
+ * @param {StudentRepository} studentRepository
  * @returns 
  */
 function newClassService(
@@ -465,8 +520,9 @@ function newClassService(
     classStudentRepository,
     meetingRepository,
     majorRepository,
+    studentRepository
 ) {
-    return new classService(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository);
+    return new classService(classRepository, assignmentRepository, classStudentRepository, meetingRepository, majorRepository, studentRepository);
 }
 
 module.exports = {

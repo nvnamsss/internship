@@ -150,8 +150,6 @@ class ReportController extends BaseController {
             return;
         }
 
-        console.log(report);
-        
         let fileContents = Buffer.from(report.file, "base64");
         let readStream = new stream.PassThrough();
         readStream.end(fileContents);

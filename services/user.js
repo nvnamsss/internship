@@ -37,20 +37,21 @@ class UserService {
             throw new Error('userRepository must be an instance of UserRepository');
         }
 
-        if (!teacherRepository) {
-            throw new Error('teacherRepository is required');
-        }
-
-        if (!(teacherRepository instanceof TeacherRepository)) {
-            throw new Error('teacherRepository must be an instance of TeacherRepository');
-        }
-
+        
         if (!studentRepository) {
             throw new Error('studentRepository is required');
         }
 
         if (!(studentRepository instanceof StudentRepository)) {
             throw new Error('studentRepository must be an instance of StudentRepository');
+        }
+
+        if (!teacherRepository) {
+            throw new Error('teacherRepository is required');
+        }
+
+        if (!(teacherRepository instanceof TeacherRepository)) {
+            throw new Error('teacherRepository must be an instance of TeacherRepository');
         }
 
         Object.defineProperties(this, {
@@ -177,6 +178,10 @@ class userService extends UserService {
         return [data, undefined];
     }
 
+    async updateUserInfo(req) {
+
+    }
+
     async login(username, password) {
         let [result, err] = await this.getByUsername(username);
 
@@ -213,25 +218,12 @@ class userService extends UserService {
             case USER_KIND_TEACHER:
                 if (result.binding != undefined) {
                     payload['teacher_id'] = result.binding;
-                    let [teacher, teacherErr] = await this.teacherRepository.get(result.binding);
-                    if (teacherErr != undefined) {
-                        console.log('get teacher by id got error', err);
-                        return [undefined, WrapError(ErrorList.ErrorInternalServer, teacherErr.message)];
-                    }
-                    data.user_info = teacher;
                 }
                 break;
             case USER_KIND_STUDENT:
                 if (result.binding != undefined) {
                     payload['student_id'] = result.binding;
-                    let [student, studentErr] = await this.studentRepository.get(result.binding);
-                    if (studentErr != undefined) {
-                        console.log('get student by id got error', err);
-                        return [undefined, WrapError(ErrorList.ErrorInternalServer, studentErr.message)];
-                    }
-                    data.user_info = student;
                 }
-
                 break;
             default:
                 console.log('invalid role', roleName);

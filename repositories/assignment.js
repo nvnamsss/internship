@@ -4,6 +4,8 @@ class AssignmentRepository {
     async get(id) { }
     async create(obj) { }
     async update(obj) { }
+    async updateScore(obj) { }
+    async updateFields(obj, fields) {}
     async batchCreate(obj) { }
 }
 
@@ -85,7 +87,23 @@ class sequelizeAssignmentRepository extends AssignmentRepository {
         try {
             const result = await this.model.update({
                 score: obj.score,
+                data: obj.data,
             }, {
+                where: {
+                    id: obj.id
+                }
+            });
+
+            return [result, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    }
+
+    async updateFields(obj, fields) {
+        try {
+            const result = await this.model.update(fields, {
                 where: {
                     id: obj.id
                 }

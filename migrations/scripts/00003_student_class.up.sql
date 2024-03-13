@@ -2,6 +2,9 @@ CREATE TABLE `class_students` (
     `id` BIGINT NOT NULL AUTO_INCREMENT,
     `class_id` BIGINT NOT NULL,
     `student_id` BIGINT NOT NULL,
+    `score` FLOAT NOT NULL DEFAULT -1,
+    `status` VARCHAR(50) NOT NULL DEFAULT '-',
+    `comment` TEXT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id) 

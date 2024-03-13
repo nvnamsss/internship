@@ -45,21 +45,6 @@
  *              role_name:
  *                  type: string
  *                  example: "student"
- *     UserData:
- *          type: object
- *          properties:
- *              id:
- *                  type: integer
- *                  example: 1
- *              code:
- *                  type: string
- *                  example: "1612404"
- *              name:
- *                  type: string
- *                  example: "Nguyen Van A"
- *              data:
- *                  type: object
- *                  example: {}
  *                  
  */
 
@@ -134,21 +119,97 @@
  * @swagger
  * components:
  *  schemas:
- *      GetUserInformationResponse:
+ *     UserData:
+ *          type: object
+ *          properties:
+ *              name:
+ *                  type: string
+ *                  example: "Nguyen Van A"
+ *              sex:
+ *                  type: string
+ *                  example: "Male"
+ *              phone:
+ *                  type: string
+ *                  example: "0123456789"
+ *              email:
+ *                  type: string
+ *                  example: "abc@gmail.com"
+ *              nationality:
+ *                  type: string
+ *                  example: "Vietnamese"
+ *              birthday:
+ *                  type: string
+ *                  example: "1999-01-01"
+ *                  
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      GetUserResponse:
  *          type: object
  *          properties:
  *              meta:
  *                  $ref: '#/components/schemas/Meta'
- *              payload:
- *                  $ref: '#/components/schemas/GetUserInformationData'
- * 
- *      GetUserInformationData:
+ *              data:
+ *                  $ref: '#/components/schemas/UserData'
+ */
+
+/**
+ * @swagger
+ * components:
+ *  schemas:
+ *      UpdateUserRequest:
  *          type: object
  *          properties:
- *              role_name:
+ *              name:
  *                  type: string
- *                  example: "student"
- *              user_info:
- *                  $ref: '#/components/schemas/UserData'
+ *                  example: "Nguyen Van A"
+ *              sex:
+ *                  type: string
+ *                  example: "Male"
+ *              phone:
+ *                  type: string
+ *                  example: "0123456789"
+ *              email:
+ *                  type: string
+ *                  example: "abc@gmail.com"
+ *              nationality:
+ *                  type: string
+ *                  example: "Vietnamese"
+ *              birthday:
+ *                  type: string
+ *                  example: "1999-01-01"
+ *              
+ *      UpdateUserResponse:
+ *          type: object
+ *          properties:
+ *              meta:
+ *                  $ref: '#/components/schemas/Meta'
+ *              data:
+ *                  $ref: '#/components/schemas/UpdateUserData'
+ * 
+ *      UpdateUserData:
+ *          type: object
+ *          properties:
+ *              name:
+ *                  type: string
+ *                  example: "Nguyen Van A"
+ *              sex:
+ *                  type: string
+ *                  example: "Male"
+ *              phone:
+ *                  type: string
+ *                  example: "0123456789"
+ *              email:
+ *                  type: string
+ *                  example: "abc@gmail.com"
+ *              nationality:
+ *                  type: string
+ *                  example: "Vietnamese"
+ *              birthday:
+ *                  type: string
+ *                  example: "1999-01-01"
  *                  
  */

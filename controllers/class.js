@@ -97,17 +97,11 @@ class ClassController extends BaseController {
     *     tags: [Class]
     *     parameters:
     *       - in: query
-    *         name: page
-    *         required: true
-    *         description: page number, start from 1
+    *         name: cursor
+    *         required: false
+    *         description: cursor to scroll the search
     *         schema:
-    *           type: integer
-    *       - in: query
-    *         name: page_size
-    *         required: true
-    *         description: page size
-    *         schema:
-    *           type: integer
+    *           type: string
     *       - in: query
     *         name: major_id
     *         required: false
@@ -128,7 +122,7 @@ class ClassController extends BaseController {
     async search(req, res) {
         let m = {
             cursor: req.query.cursor,
-            page_size: Number(req.query.page_size),
+            page_size: 10,
             major_id: req.query.major_id,
         };
 
@@ -322,6 +316,50 @@ class ClassController extends BaseController {
 
         let [result, err] = await this.classService.addMeeting(id, meeting);
         super.response(res, result, err);
+    }
+
+    /**
+    * @swagger
+    * /v1/class/{id}/evaluate:
+    *   put:
+    *     description: evaluate score for student in class
+    *     tags: [Class]
+    *     parameters:
+    *       - in: path
+    *         name: id
+    *         required: true
+    *         description: class id
+    *         schema:
+    *           type: integer
+    *     requestBody:
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             $ref: '#/components/schemas/EvaluateStudentRequest'
+    *     responses:
+    *       200:
+    *         description: success
+    *         content:
+    *           application/json:
+    *             schema:
+    *                type: object
+    *                $ref: '#/components/schemas/EvaluateStudentResponse'
+    *     security:
+    *     - BasicAuthToken: []
+    */
+    async evaluate(req, res) {
+        let request = {
+            class_id: req.params.id,
+            student_id: req.body.student_id,
+            score: req.body.score,
+            comment: req.body.comment,
+        }
+
+        let [result, err] = await this.classService.evaluate(request);
+        super.response(res, result, err);
+    
     }
 }
 

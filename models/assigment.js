@@ -12,7 +12,6 @@ function defineAssignment(sequelize) {
         name: DataTypes.STRING,
         data: DataTypes.JSON,
         verified: DataTypes.BOOLEAN,
-        score: DataTypes.INTEGER,
     }, {
         timestamps: true,
         createdAt: false,

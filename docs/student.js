@@ -30,6 +30,18 @@
  *              code:
  *                  type: string
  *                  example: "1612404"
+ *              data:
+ *                  type: object
+ *              score:
+ *                  type: float
+ *                  example: 4.2
+ *              status:
+ *                  type: string
+ *                  example: "-/pass/failed"
+ *              comment:
+ *                  type: string
+ *                  example: "hi mom"
+ *              
  *     CreateStudentResponse:
  *          type: object
  *          properties:

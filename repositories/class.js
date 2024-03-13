@@ -2,6 +2,7 @@ const { DataTypes, Sequelize, Op } = require("sequelize");
 
 class ClassRepository {
     async get(id) { }
+    async getWithStudent(id) { }
     async getByCode(code) { }
     async create(c) { }
     async update(c) { }
@@ -52,7 +53,31 @@ class classRepository extends ClassRepository {
                     }
                 ]
             })
-            return [result, undefined]
+            return [result.dataValues, undefined]
+        } catch (err) {
+            console.log(err);
+            return [undefined, err]
+        }
+    }
+
+    async getWithStudent(id) {
+        try {
+            const result = await this.model.findOne({
+                where: {
+                    id: id
+                },
+                include: [
+                    {
+                        model: this.sequelize.model('assignment'),
+                        as: 'assignments',
+                    },
+                    {
+                        model: this.sequelize.model('major'),
+                        as: 'major',
+                    }
+                ]
+            })
+            return [result.dataValues, undefined]
         } catch (err) {
             console.log(err);
             return [undefined, err]
@@ -66,7 +91,7 @@ class classRepository extends ClassRepository {
                     code: code
                 }
             })
-            return [result, undefined]
+            return [result.dataValues, undefined]
         } catch (err) {
             console.log(err);
             return [undefined, err]

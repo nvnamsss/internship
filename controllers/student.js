@@ -27,24 +27,20 @@ class StudentController extends BaseController {
                 value: studentService,
                 writable: false
             }
-        
         });
+
+        /**
+         * @type {StudentService}
+         */
+        this.studentService;
     }
 
     /**
     * @swagger
-    * /v1/student/{id}:
+    * /v1/student:
     *   get:
     *     description: get student
     *     tags: [Student]
-    *     parameters:
-    *       - in: path
-    *         name: id
-    *         required: true
-    *         description: Numeric ID of the user to retrieve.
-    *         type: integer
-    *         schema:
-    *           type: integer
     *     responses:
     *       200:
     *         description: success
@@ -57,8 +53,7 @@ class StudentController extends BaseController {
     *     - BasicAuthToken: []
     */
     async get(req, res, next) {
-        console.log(this.studentService);
-        let [student, err] = await this.studentService.getStudent(req.params.id);
+        let [student, err] = await this.studentService.getStudent(req.payload.student_id);
         
         super.response(res, student, err);
         // response(res, student, err);
@@ -89,18 +84,45 @@ class StudentController extends BaseController {
     *     - BasicAuthToken: []
     */
     async create(req, res, next) {
-        console.log(req.body);
-        let [student, err] = await this.studentService.createStudent(req.body);
+        let [student, err] = await this.studentService.create(req.body);
         
 
         response(res, student, err);
     }
 
+    /**
+    * @swagger
+    * /v1/student:
+    *   post:
+    *     description: Update student
+    *     tags: [Student]
+    *     requestBody:
+    *       required: true
+    *       content:
+    *         application/json:
+    *           schema:
+    *             type: object
+    *             $ref: '#/components/schemas/UpdateStudentRequest'
+    *     responses:
+    *       200:
+    *         description: success
+    *         content:
+    *           application/json:
+    *             schema:
+    *                type: object
+    *                $ref: '#/components/schemas/UpdateStudentResponse'
+    *     security:
+    *     - BasicAuthToken: []
+    */
     async update(req, res, next) {
-        console.log(req.body);
-        let [student, err] = await this.studentService.updateStudent(req.body);
+        let request = {
+            id: req.payload.student_id,
+            ...req.body
+        };
 
-        response(res, student, err);
+        let [student, err] = await this.studentService.update(request);
+
+        super.response(res, student, err);
     }
 }
 

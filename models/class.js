@@ -27,7 +27,10 @@ function defineClass(sequelize) {
             autoIncrement: true
         },
         class_id: DataTypes.INTEGER,
-        student_id: DataTypes.INTEGER
+        student_id: DataTypes.INTEGER,
+        score: DataTypes.FLOAT,
+        status: DataTypes.STRING,
+        comment: DataTypes.STRING,
     }, {
         timestamps: true,
         createdAt: false,
@@ -44,8 +47,8 @@ function defineClassAssociation(sequelize) {
 
     class_model.hasOne(major_model, { foreignKey: 'id', sourceKey: 'major_id' });
     class_model.hasMany(assigment_model, { foreignKey: 'class_id', sourceKey: 'id' });
-    class_model.belongsToMany(student_model, { through: class_student_model, foreignKey: 'class_id', sourceKey: 'id' });
-    student_model.belongsToMany(class_model, { through: class_student_model, foreignKey: 'student_id', sourceKey: 'id' });
+    // class_model.belongsToMany(student_model, { through: class_student_model});
+    // student_model.belongsToMany(class_model, { through: class_student_model});
 }
 
 module.exports = {

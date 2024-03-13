@@ -1,7 +1,23 @@
 const jwt = require('jsonwebtoken');
 
-const authenticateJWT = (req, res, next) => {
+const ROLES = {
+    ADMIN: 'admin',
+    STUDENT: 'student',
+    TEACHER: 'teacher',
+};
+
+const roleID2Role = {
+    1: ROLES.ADMIN,
+    2: ROLES.TEACHER,
+    3: ROLES.STUDENT
+};
+
+const authenticate = (req, res, next) => {
     const authHeader = req.header('Authorization');
+
+    if (!authHeader || authHeader.length < 7) { 
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
 
     if (!authHeader.startsWith("Bearer ")){
         return res.status(401).json({ message: 'Unauthorized' });
@@ -11,7 +27,7 @@ const authenticateJWT = (req, res, next) => {
     if (!token) {
         return res.status(401).json({ message: 'Unauthorized' });
     }
-    console.log(token);
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if (req.payload == undefined) {
@@ -25,4 +41,19 @@ const authenticateJWT = (req, res, next) => {
     }
 };
 
-module.exports = authenticateJWT;
+const verifyRoles = (...allowedRoles) => {
+    return (req, res, next) => {
+        let role = roleID2Role[req.payload.role_id];
+        if (!allowedRoles.includes(role)) {
+            return res.status(403).json({ message: 'Access denied. You do not have permission to perform this action' });
+        }
+        
+        next();
+    }
+}
+
+module.exports = {
+    authenticate,
+    verifyRoles,
+    ROLES
+};
